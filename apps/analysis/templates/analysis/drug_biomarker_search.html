@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}OncoView BiomarkerExplorer{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="/static/js/biomarker-suggest.js"></script>
+{% endblock %}
+
+
+
+
+{% block content %}
+<!--<div style="padding: 100px 30px 10px;">-->
+    <!--<form class="bs-example bs-example-form" role="form" method="post" action="drug_biomarker_list">-->
+		<!--{% csrf_token %}-->
+        <!--<div class="input-group input-group-lg">-->
+            <!--<span class="input-group-addon">By Drug</span>-->
+            <!--<input type="text" class="form-control" name="drug_biomarker" maxlength="30" required id="id_drug_biomarker" placeholder="请输入药物名称，如'gefitinib'" />-->
+			<!--<span class="input-group-btn">-->
+				<!--<button class="btn btn-default" type="submit">Go!</button>-->
+			<!--</span>-->
+        <!--</div>-->
+	<!--</form>-->
+<!--</div>-->
+
+
+<div class="container">
+    <div class="row clearfix">
+		<div class="col-md-12 column">
+            <div style="padding: 100px 30px 10px;">
+                <div class="row clearfix">
+                    <div class="col-md-12 column">
+                        <form class="bs-example bs-example-form" role="form" method="post" action="drug_biomarker_list">
+                            {% csrf_token %}
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon">By Drug</span>
+                                <input type="text" class="form-control" name="drug_biomarker" maxlength="30" required id="id_drug_biomarker" placeholder="请输入药物名称，如'gefitinib'" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit">Go!</button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <br>
+                <div class="col-md-8 column">
+                    <div class="panel panel-default" >
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                检索提示
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+                            <ul>
+                                <li>OncoView检索药物信息，以及所检索疾病相关分子标记物以及研究信息；</li>
+                                <li>使用药物检索框时，在输入两个字符后将出现提示菜单，您可以输入中文或英文疾病名称来获取选择菜单；为尽量准确查询疾病，推荐输入英文名称并从提示菜单中选择；</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 column">
+                    <div class="list-group">
+                        <a class="list-group-item active">Hotspots in Drug Searching</a>
+						{% for item in hot_list %}
+                        <div class="list-group-item">
+							{{ item.drug__drug_name }}
+                            <span class="badge">{{ item.drug_num }}</span>
+						</div>
+                        {% endfor %}
+					</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+{% endblock %}

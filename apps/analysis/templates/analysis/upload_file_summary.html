@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Welcome to OncoView!{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/biocircos-1.1.0.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/d3.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/file_summary.js'%}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<ul><li hidden id="file_id">{{ user_query_file.id }}</li></ul>
+			<table class="table table-bordered table-hover table-condensed">
+				<tbody>
+				{% for name, value in user_query_file.get_fields %}
+				{% if value %}
+					<tr>
+					<th width="150">{{ name }}</th>
+					<td>{{ value }}</td>
+					</tr>
+				{% endif %}
+				{% endfor %}
+				<tr hidden><td id="filetype">{{ user_query_file.file_type }}</td></tr>
+				</tbody>
+			</table>
+			<p><button class="button" onclick="previewFile()">预览</button></p>
+			<div id="preview"></div>
+			<div id="count"></div>
+			<div id="biocircos"></div>
+			<p>{% if not user_query_file.has_converted %}<button class="button" id="conv_btn" onclick="saveFile()">Convert</button>{% if 'csv' in user_query_file.filename %}<span><input type="checkbox" name="chkheader" id="chkheader" value="true" checked="checked">带表头</span>{% endif %}{% endif %}</p>
+			<p id="loadmsg"></p>
+			<a href="{% url 'reports:file_details' user_query_file.id %}"><button class="button">分析</button></a>
+			<a href="{% url 'reports:generate_report' user_query_file.id %}"><button class="button">生成Excel</button></a>
+			<br>
+			<form>
+				<button class="btn btn-default" type="submit">提交</button>
+			</form>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

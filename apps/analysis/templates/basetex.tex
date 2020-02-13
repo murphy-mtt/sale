@@ -1,0 +1,28 @@
+\documentclass{report}
+\usepackage{longtable}
+\usepackage{tabularx}
+\begin{document}
+    \title{ {{title}} }
+    \author{ {{author}} }
+    \date{\today}
+    \maketitle
+    \section{Test 1}
+    \subsection{ {{title}} }
+    \LaTeX
+    \begin{longtable}{|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{7.5cm}|}
+    \caption{Onco variant drug annotation} \\
+    \hline
+    Column& Description& Format       & Example      \\
+    \hline
+    \endfirsthead
+    \multicolumn{4}{r}{续表} \\
+    \hline
+    Column& Description & Format       & Example      \\
+    \hline
+    \endhead
+    \hline
+      {% for i in annotation %}
+    {{ i.relationship }} & {{ i.gene_variant }} & {{ i.evidence_phase }} & {{ i.evidence_ranking }} \\ \hline
+        {% endfor %}
+  \end{longtable}
+\end{document}

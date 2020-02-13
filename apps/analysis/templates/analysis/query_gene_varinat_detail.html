@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to OncoView!{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+    function syntaxHighlight(json) {
+		if (typeof json != 'string') {
+			json = JSON.stringify(json, undefined, 2);
+		}
+		json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function(match) {
+			var cls = 'number';
+			if (/^"/.test(match)) {
+				if (/:$/.test(match)) {
+					cls = 'key';
+				} else {
+					cls = 'string';
+				}
+			} else if (/true|false/.test(match)) {
+				cls = 'boolean';
+			} else if (/null/.test(match)) {
+				cls = 'null';
+			}
+			return '<span class="' + cls + '">' + match + '</span>';
+		});
+	}
+
+	function newWindow(obj) {
+		var json = syntaxHighlight(JSON.stringify(obj,undefined,4));
+		var w = window.open();
+		var html = "<head><style>pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; } .string { color: green; } ";
+		html+= " .number { color: darkorange; } .boolean { color: blue; } .null { color: magenta; } .key { color: red; }</style></head><body>";
+		html+= "<pre>"+json+"</pre>"; w.document.writeln(html);
+    }
+
+	function getCivic() {
+		var gene_symbol=$("#id_gene_symbol").val();
+		$.ajax({
+			url: "/reports/get_civic_info",
+			data: {
+			    "gene_symbol": gene_symbol,
+			},
+			type: "GET",
+			dataType: "json",
+			success: function (msg) {
+			    console.log(msg);
+			    newWindow(msg);
+            },
+			error: function () {
+				$("#warning_msg").append('<p>信息获取错误</p>');
+            },
+		})
+    }
+
+    function getDgi() {
+		var gene_symbol=$("#id_gene_symbol").val();
+		$.ajax({
+			url: "/reports/get_dgi_info",
+			data: {
+			    "gene_symbol": gene_symbol,
+			},
+			type: "GET",
+			dataType: "json",
+			success: function (msg) {
+			    newWindow(msg);
+            },
+			error: function () {
+				$("#warning_msg").append('<p>信息获取错误</p>');
+            },
+		})
+    }
+
+    function getMg() {
+		var gene_symbol=$("#id_gene_symbol").val();
+		$.ajax({
+			url: "/reports/get_mygene_info",
+			data: {
+			    "gene_symbol": gene_symbol,
+			},
+			type: "GET",
+			dataType: "json",
+			success: function (msg) {
+			    newWindow(msg);
+            },
+            error: function () {
+				$("#warning_msg").append('<p>信息获取错误</p>');
+            },
+		})
+    }
+
+    function getMv() {
+		var hgvs=$("#hgvs_format").text();
+		$.ajax({
+			url: "/reports/get_myvariant_info",
+			data: {
+			    "hgvs": hgvs,
+			},
+			dataType: "json",
+			type: "GET",
+			success: function (msg) {
+				var ori_data=JSON.parse(msg);
+				newWindow(ori_data);
+            },
+			error: function () {
+				$("#warning_msg").append('<p>信息获取错误</p>');
+            }
+		})
+    }
+
+	function save2db() {
+		var gene_symbol=$("#id_gene_symbol").val();
+		var gene_desc=$("#id_gene_description").val();
+		$.ajax({
+			url: "/reports/save_gene_description2db",
+			data: {
+			    "gene_symbol": gene_symbol,
+				"gene_desc": gene_desc,
+			},
+			type: "GET",
+			dataType:"json",
+			success: function (msg) {
+				console.log(msg);
+				$("#msg").empty();
+				$("#msg").append('<p>'+msg+'</p>');
+            }
+		})
+    }
+    function getPm() {
+		var gene_symbol=$("#id_gene_symbol").val();
+		var variant=$("#id_pep").val();
+		$.ajax({
+			url: "/reports/get_pm",
+			data: {
+			    "gene": gene_symbol,
+				"variant": variant,
+			},
+			type: "GET",
+			dataType: "json",
+			success: function (msg) {
+                var html="";
+				for (i=0;i+=1;i<msg.length) {
+				    html += "<span>"+msg[i]+"</span>";
+				}
+				$("#pm_msg").empty();
+				$("#pm_msg").append(msg);
+            },
+			error: function () {
+				$("#pm_msg").empty();
+				$("#pm_msg").append("不行就刷新一下，或者就放弃吧");
+            }
+		})
+    }
+</script>
+<style>
+    pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+    .string { color: green; }
+    .number { color: darkorange; }
+    .boolean { color: blue; }
+    .null { color: magenta; }
+    .key { color: red; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-10 column">
+			<form method="post">
+				{% csrf_token %}
+				{{ form.as_p }}
+				<a href="javascript:void(0)" onclick="save2db()">保存Gene Description到数据库</a>
+				<p id="msg"></p>
+				<p id="hgvs_format" hidden>{{ hgvs_format }}</p>
+				<!--<h3>数据库查询</h3>-->
+				<!--<p>点击查看<a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ gene_variant }}" target="_blank">{{ gene_variant }}</a>在PubMed中的结果</p>-->
+					<!--{% if pubmed_result %}-->
+					<!--<p>{% for i in pubmed_result %}<button type="button" class="btn btn-link"><a href="https://www.ncbi.nlm.nih.gov/pubmed/{{i}}" target="_blank">{{ i }}</a></button>{% endfor %}</p>-->
+					<!--{% endif %}-->
+				<h3>结构域信息</h3>
+				{% if domains %}
+				<p>UniProt结构域信息，如上方自动生成内容不全或者有误，请参考下表或者查询<a href="https://www.uniprot.org/">UniProt</a></p>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>基因</th>
+							<th>结构域类型</th>
+							<th>描述</th>
+							<th>起始位置</th>
+							<th>终止位置</th>
+						</tr>
+					</thead>
+					<tbody>
+					{% for i in domains %}
+						<tr>
+							<td>{{ i.gene }}</td>
+							<td>{{ i.domain_type }}</td>
+							<td>{{ i.description }}</td>
+							<td>{{ i.start }}</td>
+							<td>{{ i.end }}</td>
+						</tr>
+					</tbody>
+					{% endfor %}
+				</table>
+				{% endif %}
+
+				<h3>用药解析</h3>
+				<table class="table table-striped">
+						<thead>
+							<tr>
+								<th><input type="checkbox" id="quanxuan" /></th>
+								<th>基因</th>
+								<th>疾病</th>
+								<th>药物</th>
+								<th>注释</th>
+								<th>Relationship</th>
+								<th>Evidence_type</th>
+								<th>Evidence_phase</th>
+								<th>Evidence_ranking</th>
+								<th width="20">Comment</th>
+							</tr>
+						</thead>
+						<tbody>
+						{% for i in all_annotation %}
+							<tr>
+								<td><input type="checkbox" name="check_annotation" value={{ i.annotation_id }}><br></td>
+								<td>{{ i.gene_variant }}</td>
+								<td>{{ i.disease }}</td>
+								<td>{{ i.drug }}</td>
+								<td>{{ i.annotation_chinese }}</td>
+								<td>{{ i.relationship }}</td>
+								<td>{{ i.evidence_type }}</td>
+								<td>{{ i.evidence_phase }}</td>
+								<td>{{ i.evidence_ranking }}</td>
+								<td><input type="text" name="annotation_comment"></td>
+							</tr>
+						</tbody>
+						{% endfor %}
+				</table>
+					<input type="submit" value="Submit">
+			</form>
+		</div>
+		<div class="col-md-2 column">
+			<div class="tab-pane" id="gene_info">
+				<h3><a href="javascript:void(0)" onclick="getMg()">GeneInfo</a></h3>
+				<div id="my_gene_info"></div>
+			</div>
+			<div class="tab-pane" id="variant_info">
+				<h3><a href="javascript:void(0)" onclick="getMv()">VariantInfo</a></h3>
+				<div id="my_variant_info"></div>
+			</div>
+			<div class="tab-pane" id="dgi_info">
+				<h3><a href="javascript:void(0)" onclick="getDgi()">DGI_Info</a></h3>
+			</div>
+			<div class="tab-pane" id="civic_info">
+				<h3><a href="javascript:void(0)" onclick="getCivic()">Civic_Info</a></h3>
+			</div>
+			<p id="warning_msg"></p>
+		</div>
+	</div>
+</div>
+<div><pre id="test"></pre></div>
+{% endblock %}

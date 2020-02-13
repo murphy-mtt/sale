@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}OncoView BiomarkerExplorer{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="/static/js/biomarker-suggest.js"></script>
+{% endblock %}
+
+
+
+
+{% block content %}
+<div class="container">
+    <div class="row clearfix">
+		<div class="col-md-12 column">
+            <div style="padding: 100px 30px 10px;">
+                <div class="row clearfix">
+                    <div class="col-md-12 column">
+                        <form class="bs-example bs-example-form" role="form" method="post" action="gene_biomarker_list">
+                    {% csrf_token %}
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-addon">By Gene</span>
+                        <input type="text" class="form-control" name="gene_biomarker" maxlength="30" required id="id_gene_biomarker" placeholder="请输入基因名称，如'EGFR'" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">Go!</button>
+                        </span>
+                    </div>
+                </form>
+                    </div>
+                </div>
+                <br>
+                <div class="col-md-8 column">
+                    <div class="panel panel-default" >
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                检索提示
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+                            <ul>
+                                <li>OncoView信息检索基于基因信息，以及所检索基因相关的变异和临床用药信息；</li>
+                                <li>使用基因检索框时，在输入两字符后将出现提示菜单，提示菜单显示10条信息，您可从提示菜单中选择要查询的基因，也可手工输入完整基因名称，此部分不区分大小写；</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 column">
+                    <div class="list-group">
+                        <a class="list-group-item active">Hotspots in Gene Searching</a>
+						{% for item in hot_list %}
+                        <div class="list-group-item">
+							{{ item.gene_variant__gene__gene_symbol }}
+                            <span class="badge">{{ item.gene_an_num }}</span>
+						</div>
+                        {% endfor %}
+					</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to OncoView!{% endblock %}
+
+{% block script %}
+{% load static %}
+<!--<script type="text/javascript" src="/static/js/upload_file.js"></script>-->
+<script type="text/javascript" src="{% static 'js/upload_file.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-8 column">
+			<h3>
+				OncoView多位点报告查询
+			</h3>
+			<form method="post" enctype="multipart/form-data">
+				{% csrf_token %}
+				{{ upload_file_form.non_field_errors }}
+				<div class="fieldWrapper">
+					{{ upload_file_form.filename.errors }}
+					{{ upload_file_form.filename.label_tag }}
+					{{ upload_file_form.filename }}
+					<p class="help-block">样本名，必填，不允许包括特殊字符</p>
+				</div>
+				<!--<div class="fieldWrapper">-->
+					<!--{{ upload_file_form.sample_info_file.errors }}-->
+					<!--{{ upload_file_form.sample_info_file.label_tag }}-->
+					<!--{{ upload_file_form.sample_info_file }}-->
+					<!--<p class="help-block">样本信息，可选，用于生成检测报告样本信息部分。要求xml格式，文件名只允许大小写英文字母以及数字</p>-->
+				<!--</div>-->
+				<div class="fieldWrapper">
+					{{ upload_file_form.disease.errors }}
+					{{ upload_file_form.disease.label_tag }}
+					{{ upload_file_form.disease }}
+					<p class="help-block">输入2字符后将出现下拉菜单，请尽量从下拉菜单中选择您要查询的疾病，如果列表中没有您要查询的疾病，请选择其上级分类，并在下方描述框中写明您所要查询的详细病种，这种情况下我们会按照您填写的内容进行解析。</p>
+				</div>
+				<div class="fieldWrapper">
+					{{ upload_file_form.description.errors }}
+					{{ upload_file_form.description.label_tag }}
+					{{ upload_file_form.description }}
+					<p class="help-block">请输入该样本描述信息，推荐尽量详细提供相关信息，如详细病理分型，既往治疗史等，这些信息对于准确、有针对性的解读非常有帮助。</p>
+				</div>
+				<div class="fieldWrapper">
+					{{ upload_file_form.file_type.errors }}
+					{{ upload_file_form.file_type.label_tag }}
+					{{ upload_file_form.file_type }}
+					<p class="help-block">您可以选择上传小于2M的vcf文件或csv文件。<br>如需上传VCF文件，请上传已经经过注释并已经经过过滤的文件；<br>如果您要分析的文件为原始VCF文件，未经过过滤或者注释，由于文件较大并需要确认过滤条件以及注释，请发送邮件或者电话联系我们；<br>您也可以选择直接上传包含位点信息的csv文件，这种情况您可以选择"csv"，csv文件格式请参考<a onclick="csvFormat()">示例</a>，可点击<a id="temp">此处</a>下载；<br>Fusion：基因融合文件可选择FACTERA注释后txt文件，可点击<a id="fusion_example">此处</a>下载；；</p>
+				</div>
+				<div class="fieldWrapper">
+					{{ upload_file_form.user_file.errors }}
+					{{ upload_file_form.user_file.label_tag }}
+					{{ upload_file_form.user_file }}
+				</div>
+				<button class="btn btn-default" type="submit" id="submit_file">提交</button>
+			</form>
+			<div id="csv_format" hidden>
+				<table class="table table-condensed table-bordered">
+					<caption>csv示例</caption>
+					<thead>
+						<tr>
+							<th>Gene</th>
+							<th>Chrom</th>
+							<th>Transcript</th>
+							<th>Exon</th>
+							<th>HGVS_CDS</th>
+							<th>HGVS_PEP</th>
+							<th>Freq</th>
+							<th>COSMIC</th>
+							<th>Other_INFO</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>KRAS</td>
+							<td>12</td>
+							<td>NM_033360.2</td>
+							<td>exon2</td>
+							<td>c.35G>A</td>
+							<td>p.G12D</td>
+							<td>22.6</td>
+							<td>ID=COSM521,COSM1135366</td>
+							<td>KRAS:NM_033360.2:exon2:c.35G>A:p.G12D,KRAS:NM_004985.3:exon2:c.35G>A:p.G12D,KRAS:XM_005253365.1:exon2:c.35G>A:p.G12D</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="help-block">
+					<dl class="dl-horizontal">
+						<dt>基因</dt><dd>GENE_SYMBOL，推荐使用HGNC规范</dd>
+						<dt>染色体</dt><dd>基因所在染色体</dd>
+						<dt>转录本</dt><dd>转录本信息。一般根据所查询基因最长转录本或LRG数据库</dd>
+						<dt>外显子</dt><dd>所查询变异所在外显子区域</dd>
+						<dt>HGVS_CDS</dt><dd>核苷酸变化</dd>
+						<dt>HGVS_PEP</dt><dd>氨基酸变化</dd>
+						<dt>Freq</dt><dd>所查询变异的突变频率/丰度</dd>
+						<dt>COSMIC</dt><dd>可选，所查询突变的COSMIC数据库ID</dd>
+						<dt>Other Info</dt><dd>可选，其他可能有参考意义的信息，可填写vcf注释中的INFO部分</dd>
+					</dl>
+				</div>
+				<button onclick="hiddenFormat()">隐藏</button>
+			</div>
+		</div>
+		<div class="col-md-4 column"></div>
+	</div>
+</div>
+
+
+{% endblock %}

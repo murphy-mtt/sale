@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to OncoView!{% endblock %}
+
+{% block script %}
+<script type="text/javascript"></script>
+<style></style>
+{% endblock %}
+
+{% block content %}
+<br>
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<div class="row clearfix">
+				<div class="col-md-12 column">
+					<h4>
+						基本信息
+					</h4>
+					<dl class="dl-horizontal">
+						<dt>题目</dt>
+						<dd>{{ project_detail.subject }}</dd>
+						<dt>描述</dt>
+						<dd>{{ project_detail.description }}</dd>
+						<dt>查询建立时间</dt>
+						<dd>{{ project_detail.created_date }}</dd>
+					</dl>
+				</div>
+				<div class="col-md-12 column">
+					<h4>样本信息</h4>
+					{% if project_query %}
+					<table class="table table-striped">
+						<thead>
+						<tr>
+							<th>分析题目</th>
+							<th>癌种</th>
+						</tr>
+						</thead>
+						<tbody>
+						{% for query in project_query %}
+						<tr>
+							<td>{{ query.query_id.subject }}</td>
+							<td>{{ query.query_id.disease }}</td>
+						</tr>
+						{% endfor %}
+						</tbody>
+					</table>
+					{% else %}
+					<a class="btn btn-primary" type="button" href="{% url 'reports:add_project_file' project_detail.project_id %}">
+						添加样本
+					</a>
+					{% endif %}
+				</div>
+				<div class="col-md-12 column">
+					<h4>分析进度</h4>
+					<a class="btn btn-primary" type="button" href="{% url 'reports:project_analysis' project_detail.project_id %}">
+						开始分析
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

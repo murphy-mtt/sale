@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Welcome to OncoView!{% endblock %}
+
+{% block script %}
+<style>
+	label{
+		margin:10px;
+	}
+	.radio{
+		display: inline-block;
+		border:1px solid #ccc;
+		width:16px;
+		height: 16px;
+		border-radius:2px;
+		vertical-align: middle;
+		margin-right: 5px;
+		position: relative;
+	}
+	.radio:before{
+		content: '';
+		font-size: 0;
+		width: 10px;
+		height: 10px;
+		background: rgb(143, 188, 238);
+		position: absolute;
+		left:50%;
+		top:50%;
+		margin-left: -5px;
+		margin-top: -5px;
+		border-radius: 2px;
+		display: none;
+	}
+</style>
+<script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/biocircos-1.1.0.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/d3.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/file_summary.js'%}"></script>
+<script>
+	function cal() {
+		alert("dd")
+    }
+	function summaryMut() {
+    $.ajax({
+        url: "/reports/mut_type_summary",
+        data: {
+            "id": $("#file_id").text(),
+            "disease": $("#disease").text(),
+        },
+        success: function (msg, status) {
+            console.log(msg);
+        }
+    })
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<ul><li hidden id="file_id">{{ user_query_file.id }}</li></ul>
+			<table>
+				<tr>
+					<th width="200">文件名</th>
+					<td>{{ user_query_file.filename }}</td>
+				</tr>
+				<tr>
+					<th>疾病种类</th>
+					<td id="disease">{{ user_query_file.disease }}</td>
+				</tr>
+				<tr>
+					<th>文件类型</th>
+					<td>{{ user_query_file.file_type }}</td>
+				</tr>
+				<tr>
+					<th>文件描述</th>
+					<td>{{ user_query_file.description }}</td>
+				</tr>
+				<tr>
+					<th>解读状态</th>
+					<td><span id="annotated_status">{% if user_query_file.has_interpreted %}已解读{% endif %}</span><span id="review_status">{% if user_query_file.has_reviewed %}已审核{% endif %}</span></td>
+				</tr>
+				<tr>
+					<th>解读</th>
+					<td>{{ user_query_file.curator }}</td>
+				</tr>
+				<tr>
+					<th>审核</th>
+					<td>{{ user_query_file.reviewer }}</td>
+				</tr>
+			</table>
+			<div onload="cal()">
+				<p id="stastic_remain" hidden>{{ remained_auto_number }}</p>
+				<p id="file_line_no" hidden>{{ mutation_number }}</p>
+			</div>
+			<p><button class="button" onclick="previewFile()">预览</button></p>
+			<div id="preview"></div>
+			<div id="count"></div>
+			<div id="biocircos"></div>
+			<!--<p>{% if not user_query_file.has_converted %}<button class="button" id="conv_btn" onclick="saveFile()">Convert</button>{% if 'csv' in user_query_file.filename %}<span><input type="checkbox" name="chkheader" id="chkheader" value="true" checked="checked">带表头</span>{% endif %}{% endif %}</p>-->
+			<!--<p id="loadmsg"></p>-->
+			<!--<a href="{% url 'reports:generate_report' user_query_file.id %}"><button class="button" disabled>生成Excel</button></a>-->
+
+			<!--{% if remained_auto_number > mutation_number %}-->
+			<!--<a id="auto_button" href="{% url 'reports:auto_report' user_query_file.id %}"><button class="button">自动报告</button></a>-->
+			<!--{% else %}-->
+			<!--<p>您此份文件中共{{ mutation_number }}个需要解读的位点，但您预留的位点数只余{{ remained_auto_number }}个，请<a href="{% url 'about' %}">联系我们</a>进行升级。</p>-->
+			<!--{% endif %}-->
+			<!--<br>-->
+			<!--<form method="post" action="{% url 'reports:auto_report' user_query_file.id %}">-->
+				<!--{% csrf_token %}-->
+				<!--{% for i in user_templates %}-->
+				<!--<input class="radio" type="radio" name="choice" value={{ i.filename }}>{{ i }}-->
+				<!--<br>-->
+				<!--{% endfor %}-->
+				<!--<input class="radio" type="radio" name="choice" value='excel'>Excel-->
+				<!--<button class="btn btn-default" type="submit">提交</button>-->
+			<!--</form>-->
+		</div>
+	</div>
+</div>
+{% endblock %}

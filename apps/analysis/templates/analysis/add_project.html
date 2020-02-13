@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}OncoView-创建分析{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+	$(function() {
+		$( "#id_disease" ).autocomplete({
+			source: "get_disease",
+			minLength: 2,
+			delay: 300
+		});
+	});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<h3>
+				创建分析
+			</h3>
+			<div class="col-md-8 column">
+				<form method="post" name="query_form">
+					{% csrf_token %}
+					{{ form.non_field_errors }}
+					<div class="fieldWrapper">
+						{{ form.subject.errors }}
+						{{ form.subject.label_tag }}
+						{{ form.subject }}
+						<p class="help-block">{{ form.subject.help_text }}</p>
+					</div>
+					<div class="fieldWrapper">
+						{{ form.description.errors }}
+						{{ form.description.label_tag }}
+						{{ form.description }}
+						<p class="help-block">{{ form.description.help_text }}</p>
+					</div>
+					<button class="btn btn-default" type="submit" id="submit_file">提交</button>
+				</form>
+			</div>
+			<div class="col-md-4 column">
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

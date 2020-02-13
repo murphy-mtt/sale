@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}404{% endblock %}
+{% block content %}
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<h2>
+				抱歉，您所查询信息未找到
+			</h2>
+			<h3>
+				可能原因？
+			</h3>
+			<p>
+                您所查询的信息未能找到结果，可能是基因名称填写错误或者所查询的基因暂时未收录在OncoView数据库中。OncoView数据库中基因名称按照HGNC标准登录基因名称，并收录相关别名；基因变异数据整合COSMIC数据库变异与OncoView在运营过程中所收录的变异，并解析。疾病名称按照Disease Ontology标准。
+			</p>
+			<h3>
+				我可以怎样改进查询...
+			</h3>
+			<ul>
+				<li>如基因名称拼写问题可查询HGNC数据库或NCBI数据库获得标准名称；</li>
+                <li>请尽量从下拉菜单中选择您要查询的基因或者变异（下拉菜单在您输入两个字符后产生）；</li>
+                <li>疾病名称请尽量细化，并从下拉菜单中选择。</li>
+                <li>如仍然未能获得所需结果，您可以通过<a href="{% url 'reports:about' %}">关于我们</a>发送邮件或者电话联系，我们会尽快解读。</li>
+			</ul>
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Variant{% endblock %}
+
+{% block script %}
+
+<script>
+	$(function() {
+		$( "#id_gene_symbol" ).autocomplete({
+			source: "{% url 'reports:search_gene_symbol' %}",
+			minLength: 2,
+		});
+		$("#id_variant").autocomplete({
+			source: function (request, response) {
+				$.ajax({
+					url: "{% url 'reports:get_gene_variant' %}",
+					dataType: "json",
+					data: {
+					    term: request.term,
+						gene_symbol: $("#id_gene_symbol").val(),
+					},
+					success: function (data) {
+						response(data);
+                    }
+				});
+            },
+			minLength: 2,
+			delay: 300,
+		});
+		$( "#id_disease" ).autocomplete({
+			source: "{% url 'reports:search_disease' %}",
+			minLength: 2,
+		});
+	});
+</script>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="ui-widget">
+	<p>
+	<label for="gene_symbol">基因: </label>
+	<input id="gene_symbol">
+	</p>
+</div>
+
+<div>
+	<form>
+		{{ form }}
+		<button type="submit">Submit</button>
+	</form>
+</div>
+<p id="ttest">TTTEEE</p>
+<p id="show"></p>
+{% endblock %}

@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}待分析Query详情{% endblock %}
+
+{% block script %}
+<style>
+	table {
+				width: 90%;
+				background: #ccc;
+				margin: 10px auto;
+				border-collapse: collapse;/*border-collapse:collapse合并内外边距(去除表格单元格默认的2个像素内外边距*/
+			}
+			th,td {
+				height: 25px;
+				line-height: 25px;
+				text-align: center;
+				border: 1px solid #ccc;
+			}
+			th {
+				background: #eee;
+				font-weight: normal;
+			}
+			tr {
+				background: #fff;
+			}
+			tr:hover {
+				background: #cc0;
+			}
+			td a {
+				color: #06f;
+				text-decoration: none;
+			}
+			td a:hover {
+				color: #06f;
+				text-decoration: underline;
+			}
+
+</style>
+<script type="text/javascript">
+	function saveQuery() {
+		$.ajax(
+			{
+				url: "/reports/file_convert",
+				data: {
+				    "id": $("#query_symbol").text(),
+				},
+				success: function (msg) {
+					$("#loadmsg").empty();
+					document.getElementById("loadmsg").innerHTML=msg;
+					$("#conv_btn").attr("disabled",true);
+                },
+				error: function () {
+					alert("发生错误，请联系管理员查看日志");
+                },
+
+			}
+		)
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<br>
+<br>
+
+
+
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<div class="row clearfix">
+				<div class="col-md-12 column">
+					<h4>
+						基本信息
+					</h4>
+					<dl class="dl-horizontal">
+						<dt>查询编号</dt>
+						<dd id="query_symbol">{{ query_detail.query_symbol }}</dd>
+						<dt>题目</dt>
+						<dd>{{ query_detail.subject }}</dd>
+						<dt>疾病</dt>
+						<dd>{{ query_detail.disease }}</dd>
+						<dt>描述</dt>
+						<dd>{{ query_detail.description }}</dd>
+						<dt>查询建立时间</dt>
+						<dd>{{ query_detail.created_date }}</dd>
+						<dt>查询方式</dt>
+						{% if query_detail.need_manually %}
+						<dd>人工解读</dd>
+						{% else %}
+						<dd>自动解读</dd>
+						{% endif %}
+					</dl>
+				</div>
+			</div>
+			<div class="row clearfix">
+				<div class="col-md-12 column">
+					<h4>
+						样本信息
+					</h4>
+					{% if query_detail.orderinformation %}
+					<dl class="dl-horizontal">
+						<dt>自定义样本ID</dt>
+						<dd>{{ query_detail.orderinformation.custom_order_id }}</dd>
+						<dt>样本所有者姓名</dt>
+						<dd>{{ query_detail.orderinformation.patient_name }}</dd>
+						<dt>样本所有者性别</dt>
+						<dd>{{ query_detail.orderinformation.patient_birth }}</dd>
+						<dt>样本所有者出生年月</dt>
+						<dd>{{ query_detail.orderinformation.patient_birth }}</dd>
+						<dt>样本所有者电话</dt>
+						<dd>{{ query_detail.orderinformation.patient_mobile }}</dd>
+						<dt>样本所有者Email</dt>
+						<dd>{{ query_detail.orderinformation.patient_email }}</dd>
+						<dt>报告寄送地址</dt>
+						<dd>{{ query_detail.orderinformation.patient_address }}</dd>
+						<dt>样本接受日期</dt>
+						<dd>{{ query_detail.orderinformation.sample_receive_date }}</dd>
+						<dt>样本检测日期</dt>
+						<dd>{{ query_detail.orderinformation.experiment_date }}</dd>
+					</dl>
+					{% else %}
+						此样本未上传样本信息
+					{% endif %}
+				</div>
+			</div>
+			<div class="row clearfix">
+				<div class="col-md-12 column">
+					<h4>
+						测序文件信息
+					</h4>
+					<table class="table">
+						<thead>
+							<tr>
+								<th>文件名</th>
+								<th>上传时间</th>
+								<th>解读状态</th>
+								<th>审核状态</th>
+								<th>解读</th>
+								<th>解读时间</th>
+								<th>审核</th>
+								<th>审核时间</th>
+							</tr>
+						</thead>
+						<tbody>
+						{% for query in query_file %}
+							{% if query.has_reviewed and query.has_interpreted %}<tr class="success">{% elif query.has_interpreted %}<tr class="info">{% else %}<tr>{% endif %}
+								<td><a href="{% url 'reports:uploaded_file_summary' query.id %}">{{ query.filename }}</a></td>
+								<td>{{ query.upload_time }}</td>
+								<td>{{ query.has_interpreted }}</td>
+								<td>{{ query.has_reviewed }}</td>
+								<td>{{ query.curator }}</td>
+								<td>{{ query.curate_time }}</td>
+								<td>{{ query.reviewer }}</td>
+								<td>{{ query.review_time }}</td>
+							</tr>
+						{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<br>
+			<div class="row clearfix">
+				<div class="col-md-12 column">
+					<h4>分析结果</h4>
+					<button type="button" class="btn btn-primary" id="conv_btn" onclick="saveQuery()">
+						上传突变
+					</button>
+					<p id="loadmsg"></p>
+					<br>
+					<a type="button" class="btn btn-primary" href="{% url 'reports:file_details' query_detail.query_id %}">
+						分析结果
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}

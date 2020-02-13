@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to OncoView!{% endblock %}
+
+{% block script %}
+
+<script type="text/javascript" src="/static/js/info-suggest.js"></script>
+{% endblock %}
+
+{% block content %}
+
+
+
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-8 column" id="query_box">
+			<form class="form-horizontal" role="form" method="post" action="search_result">
+				<h3>OncoView基因变异信息报告系统</h3>
+				{% csrf_token %}
+				{{ form.non_field_errors }}
+				<span>Gene: </span>
+                    <p><input class="form-control" type="text" name="query_gene_symbol" id="id_query_gene_symbol" placeholder="请输入基因名称，如'EGFR'" maxlength="24" required /></p>
+                    <span>Variant: </span>
+                    <p><input class="form-control" type="text" name="query_variant" id="id_query_variant" placeholder="请输入变异的氨基酸形式，如'L858R'" maxlength="80" required /></p>
+                    <span>Disease: </span>
+                    <p><input class="form-control" type="text" name="query_disease" id="id_query_disease" placeholder="请输入疾病名称，如'non-small cell lung carcinoma'或'非小细胞肺癌'" maxlength="80" /></p>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							 <button type="submit" class="btn btn-default">查询</button>
+						</div>
+					</div>
+			</form>
+		</div>
+		<div class="col-md-4 column">
+			<br>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						检索提示
+					</h3>
+				</div>
+				<div class="panel-body">
+					<ul>
+						<li>OncoView信息检索基于基因-变异-疾病信息；</li>
+						<li>使用基因检索框时，在输入两字符后将出现提示菜单，提示菜单显示10条信息，您可从提示菜单中选择要查询的基因，也可手工输入完整基因名称，此部分不区分大小写；</li>
+						<li>使用变异检索框时，请输入变异的氨基酸形式，输入变异时不需要附带基因名称；在输入两个字符后将出现所查询基因的相关变异提示菜单，推荐您从下拉菜单中选择所查询变异；</li>
+						<li>使用疾病检索框时，在输入两个字符后将出现提示菜单，您可以输入中文或英文疾病名称来获取选择菜单；OncoView使用Disease Ontology疾病名称，为尽量准确查询疾病，推荐输入英文名称并从提示菜单中选择；</li>
+						<li>鉴于疾病名称简写形式不统一，不推荐使用简写；</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

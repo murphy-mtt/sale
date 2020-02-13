@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}OncoView-Disease{% endblock %}
+
+{% block content %}
+
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<h3>疾病信息</h3>
+			<div class="container">
+				<div class="row clearfix">
+					<div class="col-md-12 column">
+						<dl class="dl-horizontal">
+							<dt>疾病名称</dt>
+							<dd>{{ disease_info.disease_name }}</dd>
+							<dt>疾病名称（中文）</dt>
+							<dd>{{ disease_info.disease_name_chinese }}</dd>
+							<dt>描述信息</dt>
+							<dd>{{ disease_info.description_chinese }}</dd>
+							<dt>临床试验</dt>
+							<dd><a href="{% url 'reports:getclinicaltrials' disease_info.disease_name %}" target="_blank">ClinicalTrials</a></dd>
+						</dl>
+					</div>
+				</div>
+			</div>
+			<div>
+				<div class="row clearfix">
+					<div class="col-md-12 column">
+						<h3>分子标记物信息</h3>
+						{% if not user.has_paid %}<p class="help">您现在的状态为普通用户，您可以选择升级账号，以获取全部内容。</p>{% endif %}
+						{% if disease_annotation %}
+							<table class="table table-hover table-striped ">
+								<thead>
+									<tr>
+										<th>基因变异</th>
+										<th width="80">证据类型</th>
+										<th width="80">药物</th>
+										<th width="80">获益情况</th>
+										{% if user.has_paid %}
+											<th>研究结果</th>
+										{% else %}
+											<th width="80" class="warning">研究结果</th>
+										{% endif %}
+										<th width="80">证据等级</th>
+										<th width="80">证据分期</th>
+										<th width="80">参考文献</th>
+									</tr>
+								</thead>
+								<tbody>
+								{% for anno in disease_annotation %}
+									<tr>
+										<td>{{ anno.gene_variant }}</td>
+										<td>{{ anno.evidence_type.evidence_type_chinese }}</td>
+										<td>
+											{% if anno.evidence_type.evidence_type == 'treatment' %}
+											<a href="{% url 'reports:drug_details' anno.drug.drug_id %}" target="_blank">{{ anno.drug}}</a>
+											{% else %}None{% endif %}
+										</td>
+										<td>{{ anno.relationship.relationship_chinese }}</td>
+										<td>{% if user.has_paid %}{{ anno.annotation_chinese }}{% endif %}</td>
+										<td>{{ anno.evidence_ranking.evidence_ranking_chinese }}</td>
+										<td>{% if anno.evidence_phase.evidence_phase == 'Approved' %}<a href="{% url 'reports:drug_details' anno.drug.drug_id %}" target="_blank">{{ anno.evidence_phase.evidence_phase_chinese }}</a>{% else %}{{ anno.evidence_phase.evidence_phase_chinese }}{% endif %}</td>
+										<td>
+											{% for ref in anno.variant_drug_annotation_ref.all %}
+											<span><a href="{% url 'reports:reference_details' ref.reference_id %}" target="_blank">
+												{% if ref.pmid %}{{ ref.pmid }}{% else %}详情{% endif %}
+											</a></span>
+											{% endfor %}
+										</td>
+									</tr>
+								{% endfor %}
+								</tbody>
+							</table>
+					{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

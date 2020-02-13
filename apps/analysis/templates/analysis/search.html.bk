@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Variant{% endblock %}
+
+{% block script %}
+<style>
+   #query_box{
+    text-align: center;
+    background-color: #fff;
+    border-radius: 20px;
+    width: 500px;
+    height: 350px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+}
+	label { float: left; width: 10em; margin-right: 1em; text-align: right; }
+	input { width: 20em}
+</style>
+
+<script type="text/javascript" src="/static/js/info-suggest.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+  <h1 class="display-4">OncoAutoReport</h1>
+
+</div>
+<div class="container" id="query_box">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<form class="form-horizontal" role="form" method="post" action="search_result">
+				{% csrf_token %}
+				{{ form.as_p }}
+				<div class="form-group">
+					<div class="col-sm-offset-2 col-sm-10">
+						<button type="submit" class="btn btn-default">查询</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

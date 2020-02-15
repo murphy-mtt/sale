@@ -4,6 +4,10 @@ from django.urls import reverse
 from django.views.generic import View, TemplateView, DetailView
 
 
+# GLOBAL CONSTANTS
+EMPLOYEE = {}
+
+
 class IndexView(View):
     def get(self, request):
         return render(request, 'analysis/index.html', {})

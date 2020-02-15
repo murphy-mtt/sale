@@ -5,7 +5,8 @@ from django.forms import ModelForm
 
 
 class Orders(models.Model):
-    detecting_id = models.IntegerField(verbose_name="送检单号", blank=True, null=True)
+    detecting_id = models.CharField(max_length=20, verbose_name="送检单号", blank=True, null=True)
+    detecting_id_bk = models.CharField(max_length=20, verbose_name="单号", blank=True, null=True)
     create_date = models.DateTimeField(verbose_name="创建订单时间", blank=True, null=True)
     patient = models.CharField(max_length=20, verbose_name="受检者", blank=True, null=True)
     patient_condition = models.CharField(max_length=200, verbose_name="患者情况", blank=True, null=True)
@@ -15,7 +16,7 @@ class Orders(models.Model):
     blood_type = models.CharField(max_length=20, verbose_name="血液类型", blank=True, null=True)
     quotation = models.FloatField(verbose_name="产品价格", blank=True, null=True)
     price = models.FloatField(verbose_name="订单价格", blank=True, null=True)
-    price_of_consulting = models.FloatField(verbose_name="consulting", blank=True, null=True)
+    price_of_consulting = models.FloatField(verbose_name="报告解读费", blank=True, null=True)
     collection = models.FloatField(verbose_name="收款金额", blank=True, null=True)
     refund = models.FloatField(verbose_name="退款金额", blank=True, null=True)
     collection_date = models.DateTimeField(verbose_name='收款日期', blank=True, null=True)
@@ -60,6 +61,10 @@ class Orders(models.Model):
         return self.detecting_id
 
 
+def template_file_path(instance, filename):
+    return "uploads/{}/templates/{}".format(instance.query_user.id, filename)
+
+
 class SaleData(models.Model):
-    template_file = models.FileField(verbose_name="销售数据文件")
+    template_file = models.FileField(upload_to=template_file_path, verbose_name="销售数据文件")
     upload_time = models.DateTimeField(auto_now=True, verbose_name="上传时间", help_text="用户何时上传此文件", null=True)

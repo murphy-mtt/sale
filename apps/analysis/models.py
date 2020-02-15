@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms import ModelForm
 
 # Create your models here.
 
@@ -57,3 +58,8 @@ class Orders(models.Model):
 
     def __str__(self):
         return self.detecting_id
+
+
+class SaleData(models.Model):
+    template_file = models.FileField(verbose_name="销售数据文件")
+    upload_time = models.DateTimeField(auto_now=True, verbose_name="上传时间", help_text="用户何时上传此文件", null=True)

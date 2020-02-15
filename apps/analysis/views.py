@@ -5,7 +5,7 @@ from django.views.generic import View, TemplateView, DetailView
 from django.apps import apps
 
 from .forms import UploadFileForm
-from .models import SaleData
+from .models import SaleData, Orders
 from utils.data_process import DataStorage
 
 
@@ -56,5 +56,16 @@ class UploadSaleDataView(View):
             for f in files:
                 data_processor = DataStorage(file_path=f.temporary_file_path())
                 df = data_processor.read_file()
-                print(df.head())
+                for i in range(len(df.index)):
+                    row = df.iloc[i, :]
+                    for j in df.columns:
+                        order = Orders()
+                        try:
+                            value = getattr(row, j)
+                            key = list(cs.keys())[list(cs.values()).index(j)]
+                            print("{}: {}".format(key, value))
+                            setattr(order, key, value)
+                            order.save()
+                        except ValueError:
+                            pass
         return HttpResponse("OK")

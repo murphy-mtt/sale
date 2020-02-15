@@ -51,14 +51,14 @@ class Orders(models.Model):
     express_date2 = models.DateField(verbose_name="邮寄日期2", blank=True, null=True)
     express_company2 = models.CharField(max_length=30, verbose_name="快递公司2", blank=True, null=True)
     express_type2 = models.CharField(max_length=200, verbose_name="邮寄类型2", blank=True, null=True)
-    in_storage_time = models.DateField(verbose_name='入库时间', blank=True, null=True)
+    in_storage_time = models.CharField(max_length=100, verbose_name='入库时间', blank=True, null=True)
     platform = models.CharField(max_length=40, verbose_name="平台", blank=True, null=True)
 
     class Meta:
         unique_together = (('detecting_id', 'create_date'),)
 
     def __str__(self):
-        return self.detecting_id
+        return str(self.detecting_id)
 
 
 def template_file_path(instance, filename):

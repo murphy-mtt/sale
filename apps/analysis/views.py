@@ -27,7 +27,6 @@ class UploadSaleDataView(View):
     """
     上传数据文件，保存如数据库，同时保存文件
     """
-
     @staticmethod
     def getmodelfield(appname, modelname, exclude):
         """
@@ -58,14 +57,16 @@ class UploadSaleDataView(View):
                 df = data_processor.read_file()
                 for i in range(len(df.index)):
                     row = df.iloc[i, :]
+                    order = Orders()
                     for j in df.columns:
-                        order = Orders()
                         try:
                             value = getattr(row, j)
                             key = list(cs.keys())[list(cs.values()).index(j)]
-                            print("{}: {}".format(key, value))
                             setattr(order, key, value)
-                            order.save()
                         except ValueError:
                             pass
-        return HttpResponse("OK")
+                    try:
+                        order.save()
+                    except Exception as e:
+                        pass
+        return HttpResponseRedirect("../analysis")

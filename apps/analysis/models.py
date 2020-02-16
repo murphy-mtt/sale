@@ -44,14 +44,14 @@ class Orders(models.Model):
     dry_ice_number = models.FloatField(verbose_name="干冰数量", blank=True, null=True)
     dry_ice_fee = models.FloatField(verbose_name="干冰费用", blank=True, null=True)
     express_order1 = models.CharField(max_length=30, verbose_name="邮寄单号1", blank=True, null=True)
-    express_date1 = models.DateField(verbose_name="邮寄日期1", blank=True, null=True)
+    express_date1 = models.CharField(max_length=30, verbose_name='邮寄日期1', blank=True, null=True)
     express_company1 = models.CharField(max_length=30, verbose_name="快递公司1", blank=True, null=True)
     express_type1 = models.CharField(max_length=200, verbose_name="邮寄类型1", blank=True, null=True)
     express_order2 = models.CharField(max_length=30, verbose_name="邮寄单号2", blank=True, null=True)
-    express_date2 = models.DateField(verbose_name="邮寄日期2", blank=True, null=True)
+    express_date2 = models.CharField(max_length=30, verbose_name='邮寄日期2', blank=True, null=True)
     express_company2 = models.CharField(max_length=30, verbose_name="快递公司2", blank=True, null=True)
     express_type2 = models.CharField(max_length=200, verbose_name="邮寄类型2", blank=True, null=True)
-    in_storage_time = models.CharField(max_length=100, verbose_name='入库时间', blank=True, null=True)
+    in_storage_time = models.CharField(max_length=30, verbose_name='入库时间', blank=True, null=True)
     platform = models.CharField(max_length=40, verbose_name="平台", blank=True, null=True)
 
     class Meta:

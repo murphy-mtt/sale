@@ -4,10 +4,12 @@ from django.urls import reverse
 from django.views.generic import View, TemplateView, DetailView
 from django.apps import apps
 
+from django_pandas.io import read_frame
+import numpy as np
+
 from .forms import UploadFileForm
 from .models import SaleData, Orders
-from utils.data_process import DataStorage
-
+from utils.data_process import DataProcessor
 
 # GLOBAL CONSTANTS
 EMPLOYEE = {}
@@ -15,6 +17,10 @@ EMPLOYEE = {}
 
 class IndexView(View):
     def get(self, request):
+        qs = Orders.objects.all()
+        df = read_frame(qs)
+        p = DataProcessor(df=df)
+        print(p.sale_category())
         return render(request, 'analysis/index.html', {})
 
 
@@ -53,8 +59,8 @@ class UploadSaleDataView(View):
         if form.is_valid():
             files = request.FILES.getlist('template_file')
             for f in files:
-                data_processor = DataStorage(file_path=f.temporary_file_path())
-                df = data_processor.read_file()
+                file_path = f.temporary_file_path()
+                df = pd.read_excel(file_path, sheet_name='Sheet1')
                 for i in range(len(df.index)):
                     row = df.iloc[i, :]
                     order = Orders()

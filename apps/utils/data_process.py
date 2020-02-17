@@ -24,29 +24,29 @@ category_dict = {
 
 
 class DataProcessor:
-    def __init__(self, file_path=None, df=None):
+    def __init__(self, file_path=None, dataframe=None):
         self.file_path = file_path
-        self.df = df
+        self.dataframe = dataframe
 
-    def sale_category(self):
-        """
-        calculate sale amount according categories
-        :return: dataframe
-        """
-        result = {}
-        for key in category_dict.keys():
-            result[key] = pd.pivot_table(self.df, index=[key], values=['price'], aggfunc=np.sum)
-        return result
+    # def sale_category(self):
+    #     """
+    #     calculate sale amount according categories
+    #     :return: dataframe
+    #     """
+    #     result = {}
+    #     for key in category_dict.keys():
+    #         result[key] = pd.pivot_table(self.df, index=[key], values=['price'], aggfunc=np.sum)
+    #     return result
 
     def one_dimension(self, index, value, aggfunc=np.sum):
         if not index:
             raise ValueError("Need index.")
-        return pd.pivot_table(self.df, index=index, values=value, aggfunc=aggfunc)
+        return pd.pivot_table(self.dataframe, index=index, values=value, aggfunc=aggfunc)
 
 
-class Plot:
+class Graph:
     def __init__(self, nrows=1, ncols=1, savefig_path=None):
-        self.fig, self.ax = plt.subplots(nrows=nrows, ncols=ncols)
+        self.fig, self.ax_list = plt.subplots(nrows=nrows, ncols=ncols, figsize=(ncols*5, nrows*5))
         self.savefig_path = savefig_path
 
     def callback(self, graph_type, *args):
@@ -55,18 +55,28 @@ class Plot:
             method(*args)
         plt.savefig(self.savefig_path)
 
-    def bar(self, df):
+    def bar(self, df, ax, fold=None, category=None):
+        if fold:
+            df = df/fold
         x = np.arange(len(df))
         x_label = df.index.values.tolist()
         y = df.iloc[:, 0].values.tolist()
-        rects = self.ax.bar(x, y)
-        self.ax.set_xticks(x)
-        self.ax.set_xticklabels(x_label, rotation=45, ha='right')
-        self.autolabel(self.ax, rects)
+        rects = ax.bar(x, y)
+        ax.set_xticks(x)
+        ax.set_xticklabels(x_label, rotation=45, ha='right')
+        title = "销量分布（按{}）".format(category[df.index.name])
+        ax.set_title(title)
+        self.autolabel(ax, rects)
+        return rects
 
     @staticmethod
     def autolabel(ax, rects):
-        """Attach a text label above each bar in *rects*, displaying its height."""
+        """
+        Attach a text label above each bar in *rects*, displaying its height.
+        :param ax:
+        :param rects:
+        :return:
+        """
         for rect in rects:
             height = rect.get_height()
             ax.annotate('{}'.format(height),
@@ -76,12 +86,32 @@ class Plot:
                         ha='center', va='bottom')
 
 
-class Chandler(DataProcessor, Plot):
-    def __init__(self, file_path=None, df=None):
-        DataProcessor.__init__(self, file_path=file_path, df=df)
-        Plot.__init__(self, savefig_path="/home/murphy/django/static/images/stat.png")
+class Chandler:
+    def __init__(self, dataframe):
+        self.dataframe = dataframe
 
-    def for_index_view(self):
-        input_df = self.one_dimension(index='department', value='price')
-        self.callback("bar", input_df)
-        return
+    def index_graph(self, category):
+        ncols = 3
+        nrows = int(np.ceil(len(category)/ncols))
+        graph = Graph(nrows=nrows, ncols=ncols, savefig_path="/home/murphy/sale/static/images/stat.png")
+        data_processor = DataProcessor(dataframe=self.dataframe)
+        df_list = [data_processor.one_dimension(index=i, value='price', aggfunc=np.sum) for i in category]
+        for i in range(len(df_list), ncols*nrows):
+            df_list.insert(i, None)
+        mat = np.array(df_list).reshape(nrows, ncols)
+        for i in range(nrows):
+            for j in range(ncols):
+                d = mat[i][j]
+                ax = graph.ax_list[i][j]
+                if "None" not in str(type(d)):
+                    graph.callback("bar", d, ax, 1000, category_dict)
+
+# class Chandler(DataProcessor, Plot):
+#     def __init__(self, file_path=None, df=None):
+#         DataProcessor.__init__(self, file_path=file_path, df=df)
+#         Plot.__init__(self, savefig_path="/home/murphy/django/static/images/stat.png")
+#
+#     def for_index_view(self):
+#         input_df = self.one_dimension(index='department', value='price')
+#         self.callback("bar", input_df)
+#         return

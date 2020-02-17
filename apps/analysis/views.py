@@ -19,8 +19,15 @@ df = read_frame(qs)
 
 class IndexView(View):
     def get(self, request):
-        monica = Chandler(df=df)
-        a = monica.for_index_view()
+        category_dict = {
+            "area": "大区",
+            "cancer": "肿瘤类型",
+            "product_type": "产品",
+            "department": "科室",
+            "sample_type": "样本方式",
+        }
+        monica = Chandler(dataframe=df)
+        a = monica.index_graph(category_dict)
         return render(request, 'analysis/index.html', {})
 
 

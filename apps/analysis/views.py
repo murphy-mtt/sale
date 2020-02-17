@@ -9,18 +9,18 @@ import numpy as np
 
 from .forms import UploadFileForm
 from .models import SaleData, Orders
-from utils.data_process import DataProcessor
+from utils.data_process import DataProcessor, Chandler
 
 # GLOBAL CONSTANTS
 EMPLOYEE = {}
+qs = Orders.objects.all()
+df = read_frame(qs)
 
 
 class IndexView(View):
     def get(self, request):
-        qs = Orders.objects.all()
-        df = read_frame(qs)
-        p = DataProcessor(df=df)
-        print(p.sale_category())
+        monica = Chandler(df=df)
+        a = monica.for_index_view()
         return render(request, 'analysis/index.html', {})
 
 

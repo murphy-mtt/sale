@@ -45,9 +45,10 @@ class DataProcessor:
 
 
 class Graph:
-    def __init__(self, nrows=1, ncols=1, savefig_path=None):
+    def __init__(self, nrows=1, ncols=1, savefig_path=None, title=None):
         self.fig, self.ax_list = plt.subplots(nrows=nrows, ncols=ncols, figsize=(ncols*5, nrows*5))
         self.savefig_path = savefig_path
+        self.title = title
 
     def callback(self, graph_type, *args):
         method = getattr(self, graph_type, None)
@@ -63,7 +64,12 @@ class Graph:
         y = df.iloc[:, 0].values.tolist()
         rects = ax.bar(x, y)
         ax.set_xticks(x)
-        ax.set_xticklabels(x_label, rotation=45, ha='right')
+        ax.set_xticklabels(x_label, rotation=-45, ha='left')
+        if fold:
+            ylabel = "销量（x{}）".format(str(fold))
+        else:
+            ylabel = "销量"
+        ax.set_ylabel(ylabel)
         title = "销量分布（按{}）".format(category[df.index.name])
         ax.set_title(title)
         self.autolabel(ax, rects)
@@ -93,7 +99,7 @@ class Chandler:
     def index_graph(self, category):
         ncols = 3
         nrows = int(np.ceil(len(category)/ncols))
-        graph = Graph(nrows=nrows, ncols=ncols, savefig_path="/home/murphy/sale/static/images/stat.png")
+        graph = Graph(nrows=nrows, ncols=ncols, savefig_path="/home/murphy/sale/static/images/stat.png", title="test")
         data_processor = DataProcessor(dataframe=self.dataframe)
         df_list = [data_processor.one_dimension(index=i, value='price', aggfunc=np.sum) for i in category]
         for i in range(len(df_list), ncols*nrows):

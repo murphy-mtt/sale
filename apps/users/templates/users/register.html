@@ -9,7 +9,7 @@
 <br>
 <div class="container">
 	<div class="col-md-4 col-md-offset-4">
-		<form class='form-register' action="/register/" method="post">
+		<form class='form-register' method="post">
               {% if message %}
                   <div class="alert alert-warning">{{ message }}</div>
               {% endif %}
@@ -23,21 +23,18 @@
                   {{ register_form.username.label_tag }}
                   {{ register_form.username}}
                   <p class="help">{{ register_form.username.help_text|safe }}</p>
-                  <div id="na_chk"></div>
               </div>
               <div class="form-group">
                   {{ register_form.password1.errors }}
                   {{ register_form.password1.label_tag }}
                   {{ register_form.password1 }}
                   <p class="help">{{ register_form.password1.help_text|safe }}</p>
-                  <div id="psd1_chk"></div>
               </div>
               <div class="form-group">
                   {{ register_form.password2.errors }}
                   {{ register_form.password2.label_tag }}
                   {{ register_form.password2 }}
                   <p class="help">{{ register_form.password2.help_text|safe }}</p>
-                  <div id="psd2_chk"></div>
               </div>
               <button type="submit" class="btn btn-primary pull-right" id="submit">提交</button>
           </form>

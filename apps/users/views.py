@@ -56,7 +56,6 @@ class RegisterView(View):
             username = register_form.cleaned_data['username']
             password1 = register_form.cleaned_data['password1']
             password2 = register_form.cleaned_data['password2']
-
             if password1 != password2:
                 message = "两次输入的密码不同！"
                 return render(request, 'users/register.html', locals())
@@ -70,8 +69,7 @@ class RegisterView(View):
                 user_profile.password = make_password(password1)
                 user_profile.is_active = True
                 user_profile.save()
-
-                return render(request, 'users/register_info_ok.html', {"msg": msg})
+                return render(request, 'users/register_info_ok.html', {"message": message})
         else:
             return render(request, 'users/register.html', {"register_form": register_form})
 

@@ -10,6 +10,7 @@ import numpy as np
 from .forms import UploadFileForm
 from .models import SaleData, Orders
 from utils.data_process import DataProcessor, Chandler
+from users.models import UserProfile
 
 # GLOBAL CONSTANTS
 EMPLOYEE = {}
@@ -85,4 +86,8 @@ class UploadSaleDataView(View):
 
 
 class RegionSaleView(View):
-    pass
+    def get(self, request, user_id):
+        user = UserProfile.objects.get(id=user_id)
+        my_area = user.area
+        my_df = df.loc[df.area.isin([my_area]), :]
+        return HttpResponse("hi there")

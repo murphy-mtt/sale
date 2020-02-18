@@ -44,7 +44,7 @@
                 {% if request.user.is_authenticated %}
 					<ul class="nav navbar-nav navbar-right">
                         <li>
-                            <a href="#">Hi there, {{ request.user }}</a>
+                            <a href="{% url 'my_region' user.id %}">Hi there, {{ request.user }}</a>
                         </li>
 						<li><a href="{% url 'logout' %}">退出</a></li>
 					</ul>

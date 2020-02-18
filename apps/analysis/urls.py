@@ -4,5 +4,5 @@ from django.urls import path
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
     path('upload_sale_data', views.UploadSaleDataView.as_view(), name='upload_sale_data'),
-    path('my_region/<int:user_id>', views.RegionSaleView.as_view(), name='my_region'),
+    path('my_area/<int:user_id>', views.RegionSaleView.as_view(), name='my_area'),
 ]

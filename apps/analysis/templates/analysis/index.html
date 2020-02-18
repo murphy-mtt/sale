@@ -6,10 +6,16 @@
 <div class="container">
 	<div class="row clearfix">
 		<div class="col-md-12 column">
-            <br>
-            <br>
-            <h1>Test</h1>
-			<img src="/static/images/stat.png">
+            <h1>全国销量</h1>
+			<img src="/static/images/stat.png" alt="300x200">
+			<div class="btn-group">
+				<button class="btn btn-default">进入区域</button> <button data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></button>
+				<ul class="dropdown-menu">
+					{% for i in areas %}
+					<li><a href="#">{{ i }}</a></li>
+					{% endfor %}
+				</ul>
+			</div>
 		</div>
 	</div>
 </div>

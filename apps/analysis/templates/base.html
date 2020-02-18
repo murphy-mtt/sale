@@ -1,191 +1,70 @@
 <!DOCTYPE html>
-<!--
-Template Name: Metronic - Responsive Admin Dashboard Template build with Twitter Bootstrap 3.3.1
-Version: 3.6
-Author: KeenThemes
-Website: http://www.keenthemes.com/
-Contact: support@keenthemes.com
-Follow: www.twitter.com/keenthemes
-Like: www.facebook.com/keenthemes
-Purchase: http://themeforest.net/item/metronic-responsive-admin-dashboard-template/4021469?ref=keenthemes
-License: You must have a valid license purchased only from themeforest(the above link) in order to legally use the theme for your project.
--->
-<!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
-<!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
-<!--[if !IE]><!-->
-<html lang="en" class="no-js">
-<!--<![endif]-->
-<!-- BEGIN HEAD -->
+<html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <title>HapLab后台管理系统</title>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta content="width=device-width, initial-scale=1" name="viewport"/>
-    <meta content="" name="description"/>
-    <meta content="" name="author"/>
-    <!-- BEGIN GLOBAL MANDATORY STYLES -->
-    <link href="https://szfile.haplox.net:10080/assets/metronic/global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
-    <link href="https://szfile.haplox.net:10080/assets/metronic/global/plugins/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css"/>
-    <link href="https://szfile.haplox.net:10080/assets/metronic/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-    <link href="https://szfile.haplox.net:10080/assets/metronic/global/plugins/uniform/css/uniform.default.css" rel="stylesheet" type="text/css"/>
-    <link href="https://szfile.haplox.net:10080/assets/metronic/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css"/>
-    <!-- END GLOBAL MANDATORY STYLES -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- BEGIN THEME STYLES -->
-    <!-- DOC: To use 'rounded corners' style just load 'components-rounded.css' stylesheet instead of 'components.css' in the below style tag -->
-    <link href="https://szfile.haplox.net:10080/assets/metronic/global/css/components.css" id="style_components" rel="stylesheet" type="text/css"/>
-    <link href="https://szfile.haplox.net:10080/assets/metronic/global/css/plugins.css" rel="stylesheet" type="text/css"/>
-    <link href="https://szfile.haplox.net:10080/assets/metronic/admin/layout/css/layout.css" rel="stylesheet" type="text/css"/>
-    <link href="https://szfile.haplox.net:10080/assets/metronic/admin/layout/css/themes/default.css" rel="stylesheet" type="text/css" id="style_color"/>
-    <link href="https://szfile.haplox.net:10080/assets/admin/css/custom.css" rel="stylesheet" type="text/css"/>
-    <!-- END THEME STYLES -->
+    <title>HapLab</title>
 
-    <!-- BEGIN PAGE STYLES -->
-    <link href="https://szfile.haplox.net:10080/static/js/DataTables/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css"/>
-    <!-- END PAGE STYLES -->
+    <!-- Fonts -->
+    <link rel="stylesheet" href="https://szfile.haplox.net:10080/assets/metronic/global/plugins/font-awesome/css/font-awesome.min.css">
 
-    <link rel="shortcut icon" href="/favicon.ico"/>
+    <!-- Styles -->
+    <link rel="stylesheet" href="https://szfile.haplox.net:10080/assets/metronic/global/plugins/bootstrap/css/bootstrap.min.css">
+
+    <style>
+        body {
+            font-family: 'Lato';
+        }
+
+        .fa-btn {
+            margin-right: 6px;
+        }
+    </style>
 </head>
-<!-- END HEAD -->
-<!-- BEGIN BODY -->
-<!-- DOC: Apply "page-header-fixed-mobile" and "page-footer-fixed-mobile" class to body element to force fixed header or footer in mobile devices -->
-<!-- DOC: Apply "page-sidebar-closed" class to the body and "page-sidebar-menu-closed" class to the sidebar menu element to hide the sidebar by default -->
-<!-- DOC: Apply "page-sidebar-hide" class to the body to make the sidebar completely hidden on toggle -->
-<!-- DOC: Apply "page-sidebar-closed-hide-logo" class to the body element to make the logo hidden on sidebar toggle -->
-<!-- DOC: Apply "page-sidebar-hide" class to body element to completely hide the sidebar on sidebar toggle -->
-<!-- DOC: Apply "page-sidebar-fixed" class to have fixed sidebar -->
-<!-- DOC: Apply "page-footer-fixed" class to the body element to have fixed footer -->
-<!-- DOC: Apply "page-sidebar-reversed" class to put the sidebar on the right side -->
-<!-- DOC: Apply "page-full-width" class to the body element to have full width page without the sidebar menu -->
-<body class="page-header-fixed page-quick-sidebar-over-content page-style-square">
-<!-- BEGIN HEADER -->
-<div class="page-header navbar navbar-fixed-top">
-<!-- BEGIN HEADER INNER -->
-<div class="page-header-inner">
-<!-- BEGIN LOGO -->
-<div class="page-logo">
-    <a href="https://szfile.haplox.net:10080/backend">
-        <img src="https://szfile.haplox.net:10080/static/images/logo.png" width="120" height="43" alt="logo" class="logo-default2" style="margin-top:3px;" />
-    </a>
-    <div class="menu-toggler sidebar-toggler hide">
-        <!-- DOC: Remove the above "hide" to enable the sidebar toggler button on header -->
+<body id="app-layout">
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container">
+            <div class="navbar-header">
+                <!-- Collapsed Hamburger -->
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse">
+                    <span class="sr-only">Toggle Navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+
+                <!-- Branding Image -->
+                <a class="navbar-brand" href="{% url 'index' %}" style="padding-top: 5px;">
+                    <img src="https://szfile.haplox.net:10080/static/images/logo.png" />
+                </a>
+            </div>
+            <div class="collapse navbar-collapse" id="app-navbar-collapse">
+                {% if request.user.is_authenticated %}
+					<ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#">Hi there, {{ request.user }}</a>
+                        </li>
+						<li><a href="{% url 'logout' %}">退出</a></li>
+					</ul>
+					{% else %}
+					<ul class="nav navbar-nav navbar-right">
+						<li>
+							 <a href="{% url 'login' %}">登录</a>
+						</li>
+					</ul>
+					{% endif %}
+            </div>
+        </div>
+    </nav>
+    {% block content %}{% endblock %}
+    <div class="text-center" style="margin-bottom:0">
+        <p>Haplox产品部</p>
+        <p><a href="#">回到顶部</a></p>
     </div>
-</div>
-<!-- END LOGO -->
-<!-- BEGIN RESPONSIVE MENU TOGGLER -->
-<a href="javascript:;" class="menu-toggler responsive-toggler" data-toggle="collapse" data-target=".navbar-collapse">
-</a>
-<!-- END RESPONSIVE MENU TOGGLER -->
-<!-- BEGIN TOP NAVIGATION MENU -->
-<div class="top-menu">
-<ul class="nav navbar-nav pull-right">
-
-<!-- BEGIN USER LOGIN DROPDOWN -->
-<!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
-
-    <li class="dropdown dropdown-user">
-        <a href="https://szfile.haplox.net:10080/backend/develop/task/mytask">
-            <!-- <img alt="" class="img-circle" src=""/> -->
-            <span class="username username-hide-on-mobile"><i class="fa fa-tasks"></i> 我的任务</span>
-        </a>
-    </li>
-
-<!--
-    <li class="">
-        <a href="https://szfile.haplox.net:10080/backend" target="_blank"> <i class="icon-share-alt"></i> 前台首页 </a>
-    </li>
-    -->
-
-    <li class="dropdown dropdown-user">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-            <!-- <img alt="" class="img-circle" src=""/> -->
-            <span class="username username-hide-on-mobile">王枫林</span>
-            <i class="fa fa-angle-down"></i>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-default">
-            <li>
-                <a href="https://szfile.haplox.net:10080/backend/user/my/password"> <i class="icon-pencil"></i> 修改密码</a>
-            </li>
-
-            <li class="divider"> </li>
-
-            <li>
-                <a href="https://szfile.haplox.net:10080/logout"> <i class="icon-key"></i> 退出登录 </a>
-            </li>
-        </ul>
-    </li>
-<!-- END USER LOGIN DROPDOWN -->
-
-
-</ul>
-</div>
-<!-- END TOP NAVIGATION MENU -->
-</div>
-<!-- END HEADER INNER -->
-</div>
-<!-- END HEADER -->
-<div class="clearfix">
-</div>
-<!-- BEGIN CONTAINER -->
-
-{% block content %}{% endblock %}
-
-<!-- END CONTENT -->
-
-</div>
-<!-- END CONTAINER -->
-<!-- BEGIN FOOTER -->
-<div class="page-footer">
-    <div class="page-footer-inner">
-        2014-2016 &copy; 版权所有 HaploX.com 深圳市海普洛斯生物科技有限公司
-    </div>
-    <div class="scroll-to-top">
-        <i class="icon-arrow-up"></i>
-    </div>
-</div>
-<!-- END FOOTER -->
-<!-- BEGIN JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->
-<!-- BEGIN CORE PLUGINS -->
-<script type="text/javascript">
-    //<![CDATA[
-    window.CKEDITOR_BASEPATH='https://szfile.haplox.net:10080/packages/ckeditor/';
-    //]]>
-</script>
-<!--[if lt IE 9]>
-<script src="https://szfile.haplox.net:10080/assets/metronic/global/plugins/respond.min.js"></script>
-<script src="https://szfile.haplox.net:10080/assets/metronic/global/plugins/excanvas.min.js"></script>
-<![endif]-->
-<script src="https://szfile.haplox.net:10080/assets/metronic/global/plugins/jquery.min.js" type="text/javascript"></script>
-<script src="https://szfile.haplox.net:10080/assets/metronic/global/plugins/jquery-migrate.min.js" type="text/javascript"></script>
-<!-- IMPORTANT! Load jquery-ui-1.10.3.custom.min.js before bootstrap.min.js to fix bootstrap tooltip conflict with jquery ui tooltip -->
-<script src="https://szfile.haplox.net:10080/assets/metronic/global/plugins/jquery-ui/jquery-ui-1.10.3.custom.min.js" type="text/javascript"></script>
-<script src="https://szfile.haplox.net:10080/assets/metronic/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-<script src="https://szfile.haplox.net:10080/assets/metronic/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
-<script src="https://szfile.haplox.net:10080/assets/metronic/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
-<script src="https://szfile.haplox.net:10080/assets/metronic/global/plugins/jquery.cokie.min.js" type="text/javascript"></script>
-<script src="https://szfile.haplox.net:10080/assets/metronic/global/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
-<script src="https://szfile.haplox.net:10080/assets/metronic/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
-<!-- END CORE PLUGINS -->
-
-<!-- BEGIN PAGE LEVEL SCRIPTS -->
-<script src="https://szfile.haplox.net:10080/assets/metronic/global/scripts/metronic.js" type="text/javascript"></script>
-<script src="https://szfile.haplox.net:10080/assets/metronic/admin/layout/scripts/layout.js" type="text/javascript"></script>
-<script src="https://szfile.haplox.net:10080/assets/metronic/admin/layout/scripts/quick-sidebar.js" type="text/javascript"></script>
-<script src="https://szfile.haplox.net:10080/assets/metronic/admin/layout/scripts/demo.js" type="text/javascript"></script>
-<script src="https://szfile.haplox.net:10080/assets/metronic/admin/pages/scripts/main.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-    var chart_load_url = "https://szfile.haplox.net:10080/backend/info/chart";
-</script>
-
-<script src="https://szfile.haplox.net:10080/static/js/DataTables/js/jquery.dataTables.min.js" type="text/javascript"></script>
-<script src="https://szfile.haplox.net:10080/static/js/amcharts/amcharts.js" type="text/javascript"></script>
-<script src="https://szfile.haplox.net:10080/static/js/amcharts/pie.js" type="text/javascript"></script>
-<script src="https://szfile.haplox.net:10080/static/js/amcharts/serial.js" type="text/javascript"></script>
-<script src="https://szfile.haplox.net:10080/static/js/amcharts/themes/light.js" type="text/javascript"></script>
-<script src="https://szfile.haplox.net:10080/static/js/entity/charts.js" type="text/javascript"></script>
-
-<!-- END JAVASCRIPTS -->
-</body>
-<!-- END BODY -->
+    <!-- JavaScripts -->
+    <script src="https://szfile.haplox.net:10080/assets/metronic/global/plugins/jquery.min.js"></script>
+    <script src="https://szfile.haplox.net:10080/assets/metronic/global/plugins/bootstrap/js/bootstrap.min.js"></script>
+    </body>
 </html>

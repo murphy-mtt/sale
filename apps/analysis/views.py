@@ -22,18 +22,17 @@ class IndexView(View):
         category_dict = {
             "area": "大区",
             "cancer": "肿瘤类型",
-            "product_type": "产品",
             "department": "科室",
             "sample_type": "样本方式",
+            "order_type": "订单类型",
+            "product_type": "产品",
         }
         monica = Chandler(dataframe=df)
         a = monica.index_graph(category_dict)
-        return render(request, 'analysis/index.html', {})
-
-
-class ProjectView(View):
-    def get(self, request):
-        pass
+        areas = list(set(df.area.values.tolist()))
+        return render(request, 'analysis/index.html', {
+            "areas": areas,
+        })
 
 
 class UploadSaleDataView(View):
@@ -83,3 +82,7 @@ class UploadSaleDataView(View):
                     except Exception as e:
                         pass
         return HttpResponseRedirect("../analysis")
+
+
+class RegionSaleView(View):
+    pass

@@ -68,7 +68,11 @@ class Graph:
         else:
             ylabel = "销量"
         ax.set_ylabel(ylabel, fontsize=label_fs)
-        title = "销量分布（按{}）".format(category[df.index.name])
+
+        if category:
+            title = "销量分布（按{}）".format(category[df.index.name])
+        else:
+            title = "{}".format(df.index.name)
         ax.set_title(title)
         self.autolabel(ax, rects)
         return rects
@@ -110,3 +114,6 @@ class Chandler:
                 if "None" not in str(type(d)):
                     graph.callback("bar", {'alpha': 0.3}, d, ax, 1000, category_dict, 7)
                 ind += 1
+
+    def area_region_bar_graph(self):
+        pass

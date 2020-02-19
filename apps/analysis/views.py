@@ -98,7 +98,7 @@ class UploadSaleDataView(View):
         return HttpResponseRedirect("../analysis")
 
 
-class RegionSaleView(View):
+class AreaSaleView(View):
     def get(self, request, user_id):
         user = UserProfile.objects.get(id=user_id)
         my_area = user.area
@@ -112,3 +112,16 @@ class RegionSaleView(View):
             "my_df_desc": my_df_desc.to_html(),
             "my_df_index": my_df_index,
         })
+
+
+class SalePersonView(View):
+    def get(self, request):
+        return render(request, 'analysis/saleman.html', {})
+
+
+class RegionPersonView(View):
+    def get(self, request, user_id):
+        user = UserProfile.objects.get(id=user_id)
+        my_area = user.area
+        my_df = df.loc[df.area.isin([my_area]), :]
+        return render(request, 'analysis/saleman.html', {})

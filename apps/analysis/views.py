@@ -124,4 +124,5 @@ class RegionPersonView(View):
         user = UserProfile.objects.get(id=user_id)
         my_area = user.area
         my_df = df.loc[df.area.isin([my_area]), :]
+        monica = Chandler(dataframe=my_df)
         return render(request, 'analysis/saleman.html', {})

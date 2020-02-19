@@ -117,3 +117,6 @@ class Chandler:
 
     def area_region_bar_graph(self):
         pass
+
+    def sale_rank_graph(self):
+        pass

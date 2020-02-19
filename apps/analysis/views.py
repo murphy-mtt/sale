@@ -18,6 +18,19 @@ qs = Orders.objects.all()
 df = read_frame(qs)
 
 
+def getmodelfield(appname, modelname, exclude):
+    """
+    获取model的verbose_name和name的字段
+    """
+    modelobj = apps.get_model(appname, modelname)
+    filed = modelobj._meta.fields
+    fielddic = {}
+    params = [f for f in filed if f.name not in exclude]
+    for i in params:
+        fielddic[i.name] = i.verbose_name
+    return fielddic
+
+
 class IndexView(View):
     def get(self, request):
         category_dict = {
@@ -90,4 +103,12 @@ class RegionSaleView(View):
         user = UserProfile.objects.get(id=user_id)
         my_area = user.area
         my_df = df.loc[df.area.isin([my_area]), :]
-        return render(request, 'analysis/myarea.html', {})
+        cs = getmodelfield('analysis', 'Orders', [])
+        my_df_desc = my_df.describe().applymap("{0:.02f}".format)
+        my_df_desc.columns = [cs[key] for key in my_df_desc.columns]
+        my_df_index = my_df_desc.index.values.tolist()
+        return render(request, 'analysis/myarea.html', {
+            "my_area": my_area,
+            "my_df_desc": my_df_desc.to_html(),
+            "my_df_index": my_df_index,
+        })

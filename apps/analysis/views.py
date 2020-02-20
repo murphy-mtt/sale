@@ -127,8 +127,8 @@ class SalePersonView(View):
             "product_type": "产品",
             "doctor": "送检医生",
         }
-        monica = Chandler(dataframe=sale_df)
-        monica.sale_bar_graph(category=category_dict)
+        graph1 = Chandler(dataframe=sale_df)
+        graph1.sale_bar_graph(category=category_dict)
         return render(request, 'analysis/saleman.html', {})
 
 

@@ -35,6 +35,12 @@ class DataProcessor:
             raise ValueError("Need index.")
         return pd.pivot_table(self.dataframe, index=index, values=value, aggfunc=aggfunc)
 
+    def two_dimension(self, index, value, aggfunc=np.sum):
+        pass
+
+    def multi_columns(self, index, columns, aggfunc=np.sum):
+        return pd.pivot_table(self.dataframe, index=index, columns=columns, aggfunc=aggfunc).fillna(0)
+
 
 class Graph:
     def __init__(self, nrows=1, ncols=1, savefig_path=None, title=None):
@@ -81,6 +87,214 @@ class Graph:
     def pie(self, df, ax):
         pass
 
+    def ranking_bar(self, s, df_ps):
+        result = {}
+
+        for sale in df_ps.columns:
+            result[sale[1]] = {}
+            scoreList = []
+            percList = []
+            result[sale[1]]['s'] = []
+            result[sale[1]]['p'] = []
+            for product in df_ps.index:
+                product_total_sale = df_ps.loc[product, :].values.tolist()
+                product_individual_sale = df_ps.loc[product, sale]
+                percentile = stats.percentileofscore(product_total_sale, product_individual_sale)
+                scoreList.append(product_individual_sale)
+                percList.append(percentile)
+                result[sale[1]]['s'] = scoreList
+                result[sale[1]]['p'] = percList
+
+        testNames, testMeta = self.get_product_list()
+        student = Student(s, 2, 'boy')
+        cohort_size = len(df_ps.columns.levels[1])
+        scores = dict(zip(testNames, (Score(v, p) for v, p in zip(result[s]['s'], result[s]['p']))))
+        print(scores)
+        # arts = self.plot_student_results(student, scores, cohort_size)
+        # plt.savefig("/home/murphy/sale/static/images/saleman_ranking.png")
+
+    def plot_student_results(self, student, scores, cohort_size):
+        testNames, testMeta = self.get_product_list()
+        for i in range(len(testNames)):
+            testMeta.append("")
+
+        #  create the figure
+        fig, ax1 = plt.subplots(figsize=(14, 7))
+        fig.subplots_adjust(left=0.115, right=0.88)
+        fig.canvas.set_window_title('Eldorado K-8 Fitness Chart')
+
+        pos = np.arange(len(testNames))
+
+        rects = ax1.barh(pos, [scores[k].percentile for k in testNames],
+                         align='center',
+                         height=0.5,
+                         tick_label=testNames)
+
+        ax1.set_title(student.name)
+
+        ax1.set_xlim([0, 100])
+        ax1.xaxis.set_major_locator(MaxNLocator(11))
+        ax1.xaxis.grid(True, linestyle='--', which='major',
+                       color='grey', alpha=.25)
+
+        # Plot a solid vertical gridline to highlight the median position
+        ax1.axvline(50, color='grey', alpha=0.25)
+
+        # Set the right-hand Y-axis ticks and labels
+        ax2 = ax1.twinx()
+
+        scoreLabels = [self.format_score(scores[k].score, k) for k in testNames]
+
+        # set the tick locations
+        ax2.set_yticks(pos)
+        # make sure that the limits are set equally on both yaxis so the
+        # ticks line up
+        ax2.set_ylim(ax1.get_ylim())
+
+        # set the tick labels
+        ax2.set_yticklabels(scoreLabels)
+
+        ax2.set_ylabel('Test Scores')
+
+        xlabel = ('Percentile Ranking Across {grade} Grade {gender}s\n'
+                  'Cohort Size: {cohort_size}')
+        ax1.set_xlabel(xlabel.format(grade=self.attach_ordinal(student.grade),
+                                     gender=student.gender.title(),
+                                     cohort_size=cohort_size))
+
+        rect_labels = []
+        # Lastly, write in the ranking inside each bar to aid in interpretation
+        for rect in rects:
+            # Rectangle widths are already integer-valued but are floating
+            # type, so it helps to remove the trailing decimal point and 0 by
+            # converting width to int type
+            width = int(rect.get_width())
+
+            rankStr = self.attach_ordinal(width)
+            # The bars aren't wide enough to print the ranking inside
+            if width < 40:
+                # Shift the text to the right side of the right edge
+                xloc = 5
+                # Black against white background
+                clr = 'black'
+                align = 'left'
+            else:
+                # Shift the text to the left side of the right edge
+                xloc = -5
+                # White on magenta
+                clr = 'white'
+                align = 'right'
+
+            # Center the text vertically in the bar
+            yloc = rect.get_y() + rect.get_height() / 2
+            label = ax1.annotate(rankStr, xy=(width, yloc), xytext=(xloc, 0),
+                                 textcoords="offset points",
+                                 ha=align, va='center',
+                                 color=clr, weight='bold', clip_on=True)
+            rect_labels.append(label)
+
+        # make the interactive mouse over give the bar title
+        ax2.fmt_ydata = self.format_ycursor
+        # return all of the artists created
+
+        # return {'fig': fig,
+        #         'ax': ax1,
+        #         'ax_right': ax2,
+        #         'bars': rects,
+        #         'perc_labels': rect_labels}
+        plt.savefig("/home/murphy/django/static/images/stat.png")
+
+    def plot_student_results_bk(self, student, scores, cohort_size):
+        testNames, testMeta = self.get_product_list()
+        for i in range(len(testNames)):
+            testMeta.append("")
+
+        #  create the figure
+        fig, ax1 = plt.subplots(figsize=(14, 7))
+        fig.subplots_adjust(left=0.115, right=0.88)
+        fig.canvas.set_window_title('Eldorado K-8 Fitness Chart')
+
+        pos = np.arange(len(testNames))
+
+        rects = ax1.barh(pos, [scores[k].percentile for k in testNames],
+                         align='center',
+                         height=0.5,
+                         tick_label=testNames)
+
+        ax1.set_title(student.name)
+
+        ax1.set_xlim([0, 100])
+        ax1.xaxis.set_major_locator(MaxNLocator(11))
+        ax1.xaxis.grid(True, linestyle='--', which='major',
+                       color='grey', alpha=.25)
+
+        # Plot a solid vertical gridline to highlight the median position
+        ax1.axvline(50, color='grey', alpha=0.25)
+
+        # Set the right-hand Y-axis ticks and labels
+        ax2 = ax1.twinx()
+
+        scoreLabels = [self.format_score(scores[k].score, k) for k in testNames]
+
+        # set the tick locations
+        ax2.set_yticks(pos)
+        # make sure that the limits are set equally on both yaxis so the
+        # ticks line up
+        ax2.set_ylim(ax1.get_ylim())
+
+        # set the tick labels
+        ax2.set_yticklabels(scoreLabels)
+
+        ax2.set_ylabel('Test Scores')
+
+        xlabel = ('Percentile Ranking Across {grade} Grade {gender}s\n'
+                  'Cohort Size: {cohort_size}')
+        ax1.set_xlabel(xlabel.format(grade=self.attach_ordinal(student.grade),
+                                     gender=student.gender.title(),
+                                     cohort_size=cohort_size))
+
+        rect_labels = []
+        # Lastly, write in the ranking inside each bar to aid in interpretation
+        for rect in rects:
+            # Rectangle widths are already integer-valued but are floating
+            # type, so it helps to remove the trailing decimal point and 0 by
+            # converting width to int type
+            width = int(rect.get_width())
+
+            rankStr = self.attach_ordinal(width)
+            # The bars aren't wide enough to print the ranking inside
+            if width < 40:
+                # Shift the text to the right side of the right edge
+                xloc = 5
+                # Black against white background
+                clr = 'black'
+                align = 'left'
+            else:
+                # Shift the text to the left side of the right edge
+                xloc = -5
+                # White on magenta
+                clr = 'white'
+                align = 'right'
+
+            # Center the text vertically in the bar
+            yloc = rect.get_y() + rect.get_height() / 2
+            label = ax1.annotate(rankStr, xy=(width, yloc), xytext=(xloc, 0),
+                                 textcoords="offset points",
+                                 ha=align, va='center',
+                                 color=clr, weight='bold', clip_on=True)
+            rect_labels.append(label)
+
+        # make the interactive mouse over give the bar title
+        ax2.fmt_ydata = self.format_ycursor
+        # return all of the artists created
+
+        # return {'fig': fig,
+        #         'ax': ax1,
+        #         'ax_right': ax2,
+        #         'bars': rects,
+        #         'perc_labels': rect_labels}
+        plt.savefig("/home/murphy/django/static/images/stat.png")
+
     @staticmethod
     def autolabel(ax, rects):
         """
@@ -96,6 +310,49 @@ class Graph:
                         xytext=(0, 3),  # 3 points vertical offset
                         textcoords="offset points",
                         ha='center', va='bottom')
+
+    @staticmethod
+    def attach_ordinal(num):
+        """
+        helper function to add ordinal string to integers
+
+        1 -> 1st
+        56 -> 56th
+        """
+        suffixes = {str(i): v
+                    for i, v in enumerate(['th', 'st', 'nd', 'rd', 'th',
+                                           'th', 'th', 'th', 'th', 'th'])}
+
+        v = str(num)
+        # special case early teens
+        if v in {'11', '12', '13'}:
+            return v + 'th'
+        return v + suffixes[v[-1]]
+
+    def format_score(self, scr, test):
+        """
+        Build up the score labels for the right Y-axis by first
+        appending a carriage return to each string and then tacking on
+        the appropriate meta information (i.e., 'laps' vs 'seconds'). We
+        want the labels centered on the ticks, so if there is no meta
+        info (like for pushups) then don't add the carriage return to
+        the string
+        """
+        testNames, testMeta = self.get_product_list()
+        # md = testMeta[test]
+        md = ""
+        if md:
+            return '{0}\n{1}'.format(scr, md)
+        else:
+            return scr
+
+    @staticmethod
+    def format_ycursor(y):
+        y = int(y)
+        if y < 0 or y >= len(testNames):
+            return ''
+        else:
+            return testNames[y]
 
 
 class Chandler:
@@ -139,8 +396,13 @@ class Chandler:
                 d = df_list[ind]
                 ax = graph.ax_list[i][j]
                 if "None" not in str(type(d)):
-                    graph.callback("bar", {'alpha': 0.3}, d, ax, 1000, category, 7)
+                    try:
+                        graph.callback("bar", {'alpha': 0.3}, d, ax, 1000, category, 7)
+                    except:
+                        pass
                 ind += 1
 
-    def sale_ranking(self):
-        pass
+    def sale_ranking_graph(self, s, df):
+        data_processor = DataProcessor(dataframe=self.dataframe)
+        graph = Graph(savefig_path="/home/murphy/sale/static/images/saleman_ranking.png")
+        graph.ranking_bar(s, df)

@@ -198,12 +198,12 @@ class Graph:
         ax2.fmt_ydata = self.format_ycursor
         # return all of the artists created
 
-        # return {'fig': fig,
-        #         'ax': ax1,
-        #         'ax_right': ax2,
-        #         'bars': rects,
-        #         'perc_labels': rect_labels}
-        plt.savefig("/home/murphy/django/static/images/stat.png")
+        return {'fig': fig,
+                'ax': ax1,
+                'ax_right': ax2,
+                'bars': rects,
+                'perc_labels': rect_labels}
+        # plt.savefig("/home/murphy/django/static/images/stat.png")
 
     def plot_student_results_bk(self, student, scores, cohort_size):
         testNames, testMeta = self.get_product_list()

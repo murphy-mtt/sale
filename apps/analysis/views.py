@@ -107,15 +107,28 @@ class AreaSaleView(View):
         my_df_desc = my_df.describe().applymap("{0:.02f}".format)
         my_df_desc.columns = [cs[key] for key in my_df_desc.columns]
         my_df_index = my_df_desc.index.values.tolist()
+        sale_list = list(set(df.sale_person.values.tolist()))
+        region_list = list(set(df.region.values.tolist()))
         return render(request, 'analysis/myarea.html', {
             "my_area": my_area,
             "my_df_desc": my_df_desc.to_html(),
             "my_df_index": my_df_index,
+            "sale_list": sale_list,
+            "region_list": region_list,
         })
 
 
 class SalePersonView(View):
-    def get(self, request):
+    def get(self, request, saleman):
+        sale_df = df.loc[df.sale_person.isin([saleman]), :]
+        category_dict = {
+            "cancer": "肿瘤类型",
+            "department": "科室",
+            "product_type": "产品",
+            "doctor": "送检医生",
+        }
+        monica = Chandler(dataframe=sale_df)
+        monica.sale_bar_graph(category=category_dict)
         return render(request, 'analysis/saleman.html', {})
 
 

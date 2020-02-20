@@ -21,6 +21,7 @@ category_dict = {
     "sample_type": "样本方式",
     "order_type": "订单类型",
     "product_type": "产品",
+    "doctor": "送检医生",
 }
 
 
@@ -77,6 +78,9 @@ class Graph:
         self.autolabel(ax, rects)
         return rects
 
+    def pie(self, df, ax):
+        pass
+
     @staticmethod
     def autolabel(ax, rects):
         """
@@ -119,4 +123,24 @@ class Chandler:
         pass
 
     def sale_rank_graph(self):
+        pass
+
+    def sale_bar_graph(self, category):
+        ncols = 2
+        nrows = int(np.ceil(len(category)/ncols))
+        data_processor = DataProcessor(dataframe=self.dataframe)
+        graph = Graph(nrows=nrows, ncols=ncols, savefig_path="/home/murphy/sale/static/images/saleman_bar.png")
+        df_list = [data_processor.one_dimension(index=i, value='price', aggfunc=np.sum) for i in category]
+        for i in range(len(df_list), ncols*nrows):
+            df_list.insert(i, None)
+        ind = 0
+        for i in range(nrows):
+            for j in range(ncols):
+                d = df_list[ind]
+                ax = graph.ax_list[i][j]
+                if "None" not in str(type(d)):
+                    graph.callback("bar", {'alpha': 0.3}, d, ax, 1000, category, 7)
+                ind += 1
+
+    def sale_ranking(self):
         pass

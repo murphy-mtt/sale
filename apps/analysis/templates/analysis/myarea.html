@@ -4,20 +4,23 @@
 
 {% block title %}请登录{% endblock %}
 
+{% block script %}
+<script>
+	function getGraph() {
+		alert("test")
+    }
+</script>
+{% endblock %}
+
 {% block content %}
 <div class="container">
 	<div class="row clearfix">
 		<div class="col-md-2 column">
-			<ul class="nav nav-tabs nav-stacked">
-				<li>
-					 <a href="{% url 'saleman' %}">销售统计</a>
-				</li>
-				<li>
-					 <a href="#">区域统计</a>
-				</li>
-				<li>
-					 <a href="#">信息</a>
-				</li>
+			<h4>销售</h4>
+			<ul>
+				{% for s in sale_list %}
+				<li><a href="../saleman/{{s}}">{{ s }}</a></li>
+				{% endfor %}
 			</ul>
 		</div>
 		<div class="col-md-10 column">

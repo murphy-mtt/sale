@@ -48,7 +48,7 @@ class Graph:
             nrows=nrows,
             ncols=ncols,
             figsize=(ncols*5, nrows*5),
-            dpi=ncols*nrows*20
+            dpi=ncols*nrows*30
         )
         self.savefig_path = savefig_path
         self.title = title
@@ -205,96 +205,6 @@ class Graph:
                 'perc_labels': rect_labels}
         # plt.savefig("/home/murphy/django/static/images/stat.png")
 
-    def plot_student_results_bk(self, student, scores, cohort_size):
-        testNames, testMeta = self.get_product_list()
-        for i in range(len(testNames)):
-            testMeta.append("")
-
-        #  create the figure
-        fig, ax1 = plt.subplots()
-        fig.subplots_adjust(left=0.115, right=0.88)
-        fig.canvas.set_window_title('Eldorado K-8 Fitness Chart')
-
-        pos = np.arange(len(testNames))
-
-        rects = ax1.barh(pos, [scores[k].percentile for k in testNames],
-                         align='center',
-                         height=0.5,
-                         tick_label=testNames)
-
-        ax1.set_title(student.name)
-
-        ax1.set_xlim([0, 100])
-        ax1.xaxis.set_major_locator(MaxNLocator(11))
-        ax1.xaxis.grid(True, linestyle='--', which='major',
-                       color='grey', alpha=.25)
-
-        # Plot a solid vertical gridline to highlight the median position
-        ax1.axvline(50, color='grey', alpha=0.25)
-
-        # Set the right-hand Y-axis ticks and labels
-        ax2 = ax1.twinx()
-
-        scoreLabels = [self.format_score(scores[k].score, k) for k in testNames]
-
-        # set the tick locations
-        ax2.set_yticks(pos)
-        # make sure that the limits are set equally on both yaxis so the
-        # ticks line up
-        ax2.set_ylim(ax1.get_ylim())
-
-        # set the tick labels
-        ax2.set_yticklabels(scoreLabels)
-
-        ax2.set_ylabel('Test Scores')
-
-        xlabel = ('Percentile Ranking Across {grade} Grade {gender}s\n'
-                  'Cohort Size: {cohort_size}')
-        ax1.set_xlabel(xlabel.format(grade=self.attach_ordinal(student.grade),
-                                     gender=student.gender.title(),
-                                     cohort_size=cohort_size))
-
-        rect_labels = []
-        # Lastly, write in the ranking inside each bar to aid in interpretation
-        for rect in rects:
-            # Rectangle widths are already integer-valued but are floating
-            # type, so it helps to remove the trailing decimal point and 0 by
-            # converting width to int type
-            width = int(rect.get_width())
-
-            rankStr = self.attach_ordinal(width)
-            # The bars aren't wide enough to print the ranking inside
-            if width < 40:
-                # Shift the text to the right side of the right edge
-                xloc = 5
-                # Black against white background
-                clr = 'black'
-                align = 'left'
-            else:
-                # Shift the text to the left side of the right edge
-                xloc = -5
-                # White on magenta
-                clr = 'white'
-                align = 'right'
-
-            # Center the text vertically in the bar
-            yloc = rect.get_y() + rect.get_height() / 2
-            label = ax1.annotate(rankStr, xy=(width, yloc), xytext=(xloc, 0),
-                                 textcoords="offset points",
-                                 ha=align, va='center',
-                                 color=clr, weight='bold', clip_on=True)
-            rect_labels.append(label)
-
-        # make the interactive mouse over give the bar title
-        ax2.fmt_ydata = self.format_ycursor
-        # return all of the artists created
-
-        # return {'fig': fig,
-        #         'ax': ax1,
-        #         'ax_right': ax2,
-        #         'bars': rects,
-        #         'perc_labels': rect_labels}
-        plt.savefig("/home/murphy/django/static/images/stat.png")
 
     @staticmethod
     def autolabel(ax, rects):

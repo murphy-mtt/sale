@@ -38,8 +38,8 @@ class DataProcessor:
     def two_dimension(self, index, value, aggfunc=np.sum):
         pass
 
-    def multi_columns(self, index, columns, aggfunc=np.sum):
-        return pd.pivot_table(self.dataframe, index=index, columns=columns, aggfunc=aggfunc).fillna(0)
+    def multi_columns(self, index, columns, values=['price'], aggfunc=np.sum):
+        return pd.pivot_table(self.dataframe, index=index, columns=columns, values=values, aggfunc=aggfunc).fillna(0)
 
 
 class Graph:
@@ -87,7 +87,9 @@ class Graph:
     def pie(self, df, ax):
         pass
 
-    def ranking_bar(self, s, df_ps):
+    def ranking_bar(self, s, df_ps, df_total):
+        Student = namedtuple('Student', ['name', 'grade', 'gender'])
+        Score = namedtuple('Score', ['score', 'percentile'])
         result = {}
 
         for sale in df_ps.columns:
@@ -105,21 +107,20 @@ class Graph:
                 result[sale[1]]['s'] = scoreList
                 result[sale[1]]['p'] = percList
 
-        testNames, testMeta = self.get_product_list()
+        testNames, testMeta = self.get_product_list(df_total)
+        # testNames = [i.replace("（", "\n（") for i in testNames]
         student = Student(s, 2, 'boy')
         cohort_size = len(df_ps.columns.levels[1])
         scores = dict(zip(testNames, (Score(v, p) for v, p in zip(result[s]['s'], result[s]['p']))))
-        print(scores)
-        # arts = self.plot_student_results(student, scores, cohort_size)
-        # plt.savefig("/home/murphy/sale/static/images/saleman_ranking.png")
+        arts = self.plot_student_results(student, scores, cohort_size, testNames, testMeta)
+        plt.savefig(self.savefig_path)
 
-    def plot_student_results(self, student, scores, cohort_size):
-        testNames, testMeta = self.get_product_list()
+    def plot_student_results(self, student, scores, cohort_size, testNames, testMeta):
         for i in range(len(testNames)):
             testMeta.append("")
 
         #  create the figure
-        fig, ax1 = plt.subplots(figsize=(14, 7))
+        fig, ax1 = plt.subplots(figsize=(21, 7))
         fig.subplots_adjust(left=0.115, right=0.88)
         fig.canvas.set_window_title('Eldorado K-8 Fitness Chart')
 
@@ -143,7 +144,7 @@ class Graph:
         # Set the right-hand Y-axis ticks and labels
         ax2 = ax1.twinx()
 
-        scoreLabels = [self.format_score(scores[k].score, k) for k in testNames]
+        scoreLabels = [self.format_score(scores[k].score, k, testNames, testMeta) for k in testNames]
 
         # set the tick locations
         ax2.set_yticks(pos)
@@ -156,8 +157,8 @@ class Graph:
 
         ax2.set_ylabel('Test Scores')
 
-        xlabel = ('Percentile Ranking Across {grade} Grade {gender}s\n'
-                  'Cohort Size: {cohort_size}')
+        xlabel = ('销售业绩在全国范围内排名百分位数\n'
+                  '人数: {cohort_size}')
         ax1.set_xlabel(xlabel.format(grade=self.attach_ordinal(student.grade),
                                      gender=student.gender.title(),
                                      cohort_size=cohort_size))
@@ -210,7 +211,7 @@ class Graph:
             testMeta.append("")
 
         #  create the figure
-        fig, ax1 = plt.subplots(figsize=(14, 7))
+        fig, ax1 = plt.subplots()
         fig.subplots_adjust(left=0.115, right=0.88)
         fig.canvas.set_window_title('Eldorado K-8 Fitness Chart')
 
@@ -329,7 +330,7 @@ class Graph:
             return v + 'th'
         return v + suffixes[v[-1]]
 
-    def format_score(self, scr, test):
+    def format_score(self, scr, test, testNames, testMeta):
         """
         Build up the score labels for the right Y-axis by first
         appending a carriage return to each string and then tacking on
@@ -338,7 +339,6 @@ class Graph:
         info (like for pushups) then don't add the carriage return to
         the string
         """
-        testNames, testMeta = self.get_product_list()
         # md = testMeta[test]
         md = ""
         if md:
@@ -353,6 +353,19 @@ class Graph:
             return ''
         else:
             return testNames[y]
+
+    @staticmethod
+    def get_product_list(df):
+        df_ps = pd.pivot_table(df, index=['product_type'], columns=['sale_person'], aggfunc=sum).fillna(0)
+        product_name = df_ps.index.values.tolist()
+        testMeta = []
+        for i in range(len(product_name)):
+            testMeta.append("")
+        return product_name, testMeta
+
+    @staticmethod
+    def product_change_line(products):
+        return
 
 
 class Chandler:
@@ -402,7 +415,8 @@ class Chandler:
                         pass
                 ind += 1
 
-    def sale_ranking_graph(self, s, df):
-        data_processor = DataProcessor(dataframe=self.dataframe)
+    def sale_ranking_graph(self, dataframe, s):
+        data_processor = DataProcessor(dataframe=dataframe)
         graph = Graph(savefig_path="/home/murphy/sale/static/images/saleman_ranking.png")
-        graph.ranking_bar(s, df)
+        df_ps = data_processor.multi_columns(index=['product_type'], columns=['sale_person'])
+        graph.ranking_bar(s, df_ps, dataframe)

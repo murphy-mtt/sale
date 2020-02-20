@@ -121,6 +121,7 @@ class AreaSaleView(View):
 class SalePersonView(View):
     def get(self, request, saleman):
         sale_df = df.loc[df.sale_person.isin([saleman]), :]
+        sale_df.doctor = sale_df.doctor.fillna('未填写')
         category_dict = {
             "cancer": "肿瘤类型",
             "department": "科室",
@@ -129,6 +130,7 @@ class SalePersonView(View):
         }
         graph1 = Chandler(dataframe=sale_df)
         graph1.sale_bar_graph(category=category_dict)
+        graph1.sale_ranking_graph(df, saleman)
         return render(request, 'analysis/saleman.html', {})
 
 

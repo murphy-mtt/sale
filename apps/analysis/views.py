@@ -6,6 +6,10 @@ from django.apps import apps
 
 from django_pandas.io import read_frame
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from matplotlib.patches import ConnectionPatch
 
 from .forms import UploadFileForm
 from .models import SaleData, Orders
@@ -136,8 +140,77 @@ class SalePersonView(View):
 
 class RegionSaleView(View):
     def get(self, request, region):
-        graph = Chandler(dataframe=df)
-        graph.region_distribution(region)
+        df_bp = pd.pivot_table(df, index=['region', 'sale_person'], values=['price'], aggfunc=np.sum).fillna(0)
+        graph = Chandler(df)
+        graph.region_distribution(region=region)
+        # counts1 = []
+        # lables1 = df_bp.index.levels[0].values.tolist()
+        # region_index = lables1.index(region)
+        # item = lables1.pop(region_index)
+        # lables1.insert(0, item)
+        # for i in lables1:
+        #     counts1.append(df_bp.loc[i].sum()[0])
+        # counts1 = np.array(counts1) / float(np.array(counts1).sum())
+        # count2 = df_bp.loc[region].values / float(df_bp.loc[region].values.sum())
+        # labels2 = df_bp.loc[region].index.tolist()
+        #
+        # fig = plt.figure(figsize=(9, 5.0625))
+        # ax1 = fig.add_subplot(121)
+        # ax2 = fig.add_subplot(122)
+        # fig.subplots_adjust(wspace=0)
+        #
+        # # pie chart parameters
+        # ratios = counts1
+        # labels = lables1
+        # # rotate so that first wedge is split by the x-axis
+        # angle = -180 * ratios[0]
+        # ax1.pie(ratios, autopct='%1.1f%%', startangle=angle,
+        #         labels=labels)
+        #
+        # # bar chart parameters
+        #
+        # xpos = 0
+        # bottom = 0
+        # ratios = count2
+        # width = .2
+        #
+        # for j in range(len(ratios)):
+        #     height = ratios[j]
+        #     ax2.bar(xpos, height, width, bottom=bottom)
+        #     ypos = bottom + ax2.patches[j].get_height() / 2
+        #     bottom += height
+        #     ax2.text(xpos, ypos, "%d%%" % (ax2.patches[j].get_height() * 100),
+        #              ha='center')
+        #
+        # ax2.set_title('Age of approvers')
+        # ax2.legend(labels2)
+        # ax2.axis('off')
+        # ax2.set_xlim(- 2.5 * width, 2.5 * width)
+        #
+        # # use ConnectionPatch to draw lines between the two plots
+        # # get the wedge data
+        # theta1, theta2 = ax1.patches[0].theta1, ax1.patches[0].theta2
+        # center, r = ax1.patches[0].center, ax1.patches[0].r
+        # bar_height = sum([item.get_height() for item in ax2.patches])
+        #
+        # # draw top connecting line
+        # x = r * np.cos(np.pi / 180 * theta2) + center[0]
+        # y = np.sin(np.pi / 180 * theta2) + center[1]
+        # con = ConnectionPatch(xyA=(- width / 2, bar_height), xyB=(x, y),
+        #                       coordsA="data", coordsB="data", axesA=ax2, axesB=ax1)
+        # con.set_color([0, 0, 0])
+        # con.set_linewidth(4)
+        # ax2.add_artist(con)
+        #
+        # # draw bottom connecting line
+        # x = r * np.cos(np.pi / 180 * theta1) + center[0]
+        # y = np.sin(np.pi / 180 * theta1) + center[1]
+        # con = ConnectionPatch(xyA=(- width / 2, 0), xyB=(x, y), coordsA="data",
+        #                       coordsB="data", axesA=ax2, axesB=ax1)
+        # con.set_color([0, 0, 0])
+        # ax2.add_artist(con)
+        # con.set_linewidth(4)
+        # plt.savefig("/home/murphy/sale/static/images/region_distribution.png")
         return render(request, 'analysis/regionsale.html', {})
 
 

@@ -47,8 +47,8 @@ class Graph:
         self.fig, self.ax_list = plt.subplots(
             nrows=nrows,
             ncols=ncols,
-            figsize=(ncols*5, nrows*5),
-            dpi=ncols*nrows*30
+            # figsize=(ncols*5, nrows*5),
+            # dpi=ncols*nrows*30
         )
         self.savefig_path = savefig_path
         self.title = title
@@ -59,7 +59,7 @@ class Graph:
             method(*args)
         plt.setp(plt_args)
         plt.title(self.title)
-        # plt.savefig(self.savefig_path)
+        plt.savefig(self.savefig_path)
 
     def bar(self, df, ax, fold=None, category=None, label_fs=8):
         if fold:
@@ -220,7 +220,6 @@ class Graph:
                 labels=label1, explode=explode)
 
         # bar chart parameters
-
         xpos = 0
         bottom = 0
         width = .2
@@ -261,14 +260,14 @@ class Graph:
         con.set_color([0, 0, 0])
         ax2.add_artist(con)
         con.set_linewidth(1)
-        return {
-            'fig': fig,
-            'ax1': ax1,
-            'ax2': ax2,
-            'con': con,
-            'theta1': theta1,
-            'theta2': theta2,
-        }
+        # return {
+        #     'fig': fig,
+        #     'ax1': ax1,
+        #     # 'ax2': ax2,
+        #     # 'con': con,
+        #     # 'theta1': theta1,
+        #     # 'theta2': theta2,
+        # }
 
     @staticmethod
     def autolabel(ax, rects):
@@ -401,8 +400,13 @@ class Chandler:
 
     def region_distribution(self, region=None):
         df = self.dataframe
-        df_bp = pd.pivot_table(df, index=['region', 'sale_person'], aggfunc=np.sum).fillna(0)
-        graph = Graph(nrows=1, ncols=2, savefig_path="/home/murphy/sale/static/images/region_distribution.png")
+        df_bp = pd.pivot_table(df, index=['region', 'sale_person'], values=['price'], aggfunc=np.sum).fillna(0)
+        graph = Graph(
+            nrows=1,
+            ncols=2,
+            title="区域销量分布：{}".format(region),
+            savefig_path="/home/murphy/sale/static/images/region_distribution.png"
+        )
         counts1 = []
         lables1 = df_bp.index.levels[0].values.tolist()
         region_index = lables1.index(region)

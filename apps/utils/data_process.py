@@ -58,7 +58,8 @@ class Graph:
         if callable(method):
             method(*args)
         plt.setp(plt_args)
-        plt.savefig(self.savefig_path)
+        plt.title(self.title)
+        # plt.savefig(self.savefig_path)
 
     def bar(self, df, ax, fold=None, category=None, label_fs=8):
         if fold:
@@ -203,8 +204,71 @@ class Graph:
                 'ax_right': ax2,
                 'bars': rects,
                 'perc_labels': rect_labels}
-        # plt.savefig("/home/murphy/django/static/images/stat.png")
 
+    def bar_of_pie(self, data):
+        fig, (ax1, ax2) = self.fig, self.ax_list
+        fig.subplots_adjust(wspace=0)
+
+        ratios1, label1, ratios2, label2 = data
+
+        # pie chart parameters
+        explode = np.zeros(len(ratios1))
+        explode[0] = 0.1
+        # rotate so that first wedge is split by the x-axis
+        angle = -180 * ratios1[0]
+        ax1.pie(ratios1, autopct='%1.1f%%', startangle=angle,
+                labels=label1, explode=explode)
+
+        # bar chart parameters
+
+        xpos = 0
+        bottom = 0
+        width = .2
+        # colors = [[.1, .3, .5], [.1, .3, .3], [.1, .3, .7], [.1, .3, .9]]
+
+        for j in range(len(ratios2)):
+            height = ratios2[j]
+            ax2.bar(xpos, height, width, bottom=bottom)
+            ypos = bottom + ax2.patches[j].get_height() / 2
+            bottom += height
+            ax2.text(xpos, ypos, "%d%%" % (ax2.patches[j].get_height() * 100),
+                     ha='center')
+
+        ax2.legend(label2)
+        ax2.axis('off')
+        ax2.set_xlim(- 2.5 * width, 2.5 * width)
+
+        # use ConnectionPatch to draw lines between the two plots
+        # get the wedge data
+        theta1, theta2 = ax1.patches[0].theta1, ax1.patches[0].theta2
+        center, r = ax1.patches[0].center, ax1.patches[0].r
+        bar_height = sum([item.get_height() for item in ax2.patches])
+
+        # draw top connecting line
+        x = r * np.cos(np.pi / 180 * theta2) + center[0]
+        y = np.sin(np.pi / 180 * theta2) + center[1]
+        con = ConnectionPatch(xyA=(- width / 2, bar_height), xyB=(x, y),
+                              coordsA="data", coordsB="data", axesA=ax2, axesB=ax1)
+        con.set_color([0, 0, 0])
+        con.set_linewidth(1)
+        ax2.add_artist(con)
+
+        # draw bottom connecting line
+        x = r * np.cos(np.pi / 180 * theta1) + center[0]
+        y = np.sin(np.pi / 180 * theta1) + center[1]
+        con = ConnectionPatch(xyA=(- width / 2, 0), xyB=(x, y), coordsA="data",
+                              coordsB="data", axesA=ax2, axesB=ax1)
+        con.set_color([0, 0, 0])
+        ax2.add_artist(con)
+        con.set_linewidth(1)
+        return {
+            'fig': fig,
+            'ax1': ax1,
+            'ax2': ax2,
+            'con': con,
+            'theta1': theta1,
+            'theta2': theta2,
+        }
 
     @staticmethod
     def autolabel(ax, rects):
@@ -277,6 +341,10 @@ class Graph:
     def product_change_line(products):
         return
 
+    @staticmethod
+    def percent_convert(ser):
+        return ser / float(ser.sum())
+
 
 class Chandler:
     def __init__(self, dataframe):
@@ -330,3 +398,20 @@ class Chandler:
         graph = Graph(savefig_path="/home/murphy/sale/static/images/saleman_ranking.png")
         df_ps = data_processor.multi_columns(index=['product_type'], columns=['sale_person'])
         graph.ranking_bar(s, df_ps, dataframe)
+
+    def region_distribution(self, region=None):
+        df = self.dataframe
+        df_bp = pd.pivot_table(df, index=['region', 'sale_person'], aggfunc=np.sum).fillna(0)
+        graph = Graph(nrows=1, ncols=2, savefig_path="/home/murphy/sale/static/images/region_distribution.png")
+        counts1 = []
+        lables1 = df_bp.index.levels[0].values.tolist()
+        region_index = lables1.index(region)
+        item = lables1.pop(region_index)
+        lables1.insert(0, item)
+        for i in lables1:
+            counts1.append(df_bp.loc[i].sum()[0])
+        counts1 = graph.percent_convert(np.array(counts1))
+        count2 = graph.percent_convert(df_bp.loc[region].values)
+        labels2 = df_bp.loc[region].index.tolist()
+        data = [counts1, lables1, count2, labels2]
+        graph.callback('bar_of_pie', {}, data)

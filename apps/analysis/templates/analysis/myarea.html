@@ -16,6 +16,12 @@
 <div class="container">
 	<div class="row clearfix">
 		<div class="col-md-2 column">
+			<h4>区域</h4>
+			<ul>
+				{% for r in region_list %}
+				<li><a href="../regionsale/{{r}}">{{ r }}</a></li>
+				{% endfor %}
+			</ul>
 			<h4>销售</h4>
 			<ul>
 				{% for s in sale_list %}

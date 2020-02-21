@@ -134,6 +134,13 @@ class SalePersonView(View):
         return render(request, 'analysis/saleman.html', {})
 
 
+class RegionSaleView(View):
+    def get(self, request, region):
+        graph = Chandler(dataframe=df)
+        graph.region_distribution(region)
+        return render(request, 'analysis/regionsale.html', {})
+
+
 class RegionPersonView(View):
     def get(self, request, user_id):
         user = UserProfile.objects.get(id=user_id)

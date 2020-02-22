@@ -43,13 +43,18 @@ class DataProcessor:
 
 
 class Graph:
-    def __init__(self, nrows=1, ncols=1, savefig_path=None, title=None):
-        self.fig, self.ax_list = plt.subplots(
-            nrows=nrows,
-            ncols=ncols,
-            # figsize=(ncols*5, nrows*5),
-            # dpi=ncols*nrows*30
-        )
+    def __init__(self, nrows=1, ncols=1, savefig_path=None, title=None, figsize=None):
+        if figsize:
+            self.fig, self.ax_list = plt.subplots(
+                nrows=nrows,
+                ncols=ncols,
+                figsize=figsize,
+            )
+        else:
+            self.fig, self.ax_list = plt.subplots(
+                nrows=nrows,
+                ncols=ncols,
+            )
         self.savefig_path = savefig_path
         self.title = title
 
@@ -87,6 +92,21 @@ class Graph:
 
     def pie(self, df, ax):
         pass
+
+    def stacked_plot(self, data):
+        fig, ax = self.fig, self.ax_list
+        df = data
+        xtickslabel = df.index.strftime(date_format='%Y-%m')
+        x = np.arange(len(df.index))
+        y = []
+        for i in range(len(df.columns)):
+            y.append(df.iloc[:, i])
+        xticks = range(0, len(df.index), 1)
+        ax.set_xticks(xticks)
+        ax.stackplot(x, y, labels=df.columns.levels[1])
+        ax.set_xticklabels(xtickslabel, rotation=45)
+        ax.set_ylim(0, )
+        plt.legend(loc='upper left')
 
     def ranking_bar(self, s, df_ps, df_total):
         Student = namedtuple('Student', ['name', 'grade', 'gender'])
@@ -352,7 +372,12 @@ class Chandler:
     def index_graph(self, category):
         ncols = 3
         nrows = int(np.ceil(len(category)/ncols))
-        graph = Graph(nrows=nrows, ncols=ncols, savefig_path="/home/murphy/sale/static/images/stat.png")
+        graph = Graph(
+            nrows=nrows,
+            ncols=ncols,
+            savefig_path="/home/murphy/sale/static/images/stat.png",
+            figsize=(15, 10),
+        )
         data_processor = DataProcessor(dataframe=self.dataframe)
         df_list = [data_processor.one_dimension(index=i, value='price', aggfunc=np.sum) for i in category]
         for i in range(len(df_list), ncols*nrows):
@@ -376,7 +401,12 @@ class Chandler:
         ncols = 2
         nrows = int(np.ceil(len(category)/ncols))
         data_processor = DataProcessor(dataframe=self.dataframe)
-        graph = Graph(nrows=nrows, ncols=ncols, savefig_path="/home/murphy/sale/static/images/saleman_bar.png")
+        graph = Graph(
+            nrows=nrows,
+            ncols=ncols,
+            savefig_path="/home/murphy/sale/static/images/saleman_bar.png",
+            figsize=(10, 10),
+        )
         df_list = [data_processor.one_dimension(index=i, value='price', aggfunc=np.sum) for i in category]
         for i in range(len(df_list), ncols*nrows):
             df_list.insert(i, None)
@@ -419,3 +449,16 @@ class Chandler:
         labels2 = df_bp.loc[region].index.tolist()
         data = [counts1, lables1, count2, labels2]
         graph.callback('bar_of_pie', {}, data)
+
+    def region_stacked_graph(self):
+        df_tmp = self.dataframe
+        p = ["%s-%s" % (a.year, a.month) for a in df_tmp['create_date']]
+        df_tmp['period'] = pd.to_datetime(p, format='%Y-%m')
+        df_filled = pd.pivot_table(df_tmp, index=['period'], values=['price'], columns=['region'],
+                                   aggfunc=np.sum).fillna(value=0.00).applymap("{0:.02f}".format)
+        print(df_filled)
+        graph = Graph(
+            title="区域销量分布堆积图",
+            savefig_path="/home/murphy/sale/static/images/region_stacked_graph.png",
+        )
+        graph.callback('stacked_plot', {}, df_filled)

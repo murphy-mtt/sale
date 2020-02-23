@@ -100,12 +100,11 @@ class Graph:
         x = np.arange(len(df.index))
         y = []
         for i in range(len(df.columns)):
-            y.append(df.iloc[:, i])
+            y.append(df.iloc[:, i].map(lambda j: float(j)))
         xticks = range(0, len(df.index), 1)
         ax.set_xticks(xticks)
         ax.stackplot(x, y, labels=df.columns.levels[1])
         ax.set_xticklabels(xtickslabel, rotation=45)
-        ax.set_ylim(0, )
         plt.legend(loc='upper left')
 
     def ranking_bar(self, s, df_ps, df_total):
@@ -456,7 +455,6 @@ class Chandler:
         df_tmp['period'] = pd.to_datetime(p, format='%Y-%m')
         df_filled = pd.pivot_table(df_tmp, index=['period'], values=['price'], columns=['region'],
                                    aggfunc=np.sum).fillna(value=0.00).applymap("{0:.02f}".format)
-        print(df_filled)
         graph = Graph(
             title="区域销量分布堆积图",
             savefig_path="/home/murphy/sale/static/images/region_stacked_graph.png",

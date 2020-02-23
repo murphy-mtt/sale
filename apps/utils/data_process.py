@@ -8,6 +8,8 @@ from matplotlib.patches import ConnectionPatch
 from matplotlib.ticker import MaxNLocator
 from collections import namedtuple
 
+from django.conf import settings
+
 
 plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
 plt.rcParams['axes.unicode_minus'] = False
@@ -100,6 +102,7 @@ class Graph:
         x = np.arange(len(df.index))
         y = []
         for i in range(len(df.columns)):
+            # use map to convert str into float
             y.append(df.iloc[:, i].map(lambda j: float(j)))
         xticks = range(0, len(df.index), 1)
         ax.set_xticks(xticks)
@@ -288,6 +291,46 @@ class Graph:
         #     # 'theta2': theta2,
         # }
 
+    def bar_with_table_graph(self, data):
+        fig, ax = self.fig, self.ax_list
+
+        index = data.index
+        columns = data.columns
+
+        colors = plt.cm.BuPu(np.linspace(0, 0.5, len(index)))
+
+        # Get some pastel shades for the colors
+        n_rows = len(data)
+
+        index = np.arange(len(columns)) + 0.3
+        bar_width = 0.4
+
+        # Initialize the vertical-offset for the stacked bar chart.
+        y_offset = np.zeros(len(columns))
+
+        # Plot bars and create text labels for the table
+        cell_text = []
+        for row in range(n_rows):
+            plt.bar(index, data.iloc[row, :], bar_width, bottom=y_offset, color=colors[row])
+            y_offset = y_offset + data.iloc[row, :]
+            cell_text.append(['%1.1f' % (x / 1000.0) for x in y_offset])
+        # Reverse colors and text labels to display the last value at the top.
+        colors = colors[::-1]
+        cell_text.reverse()
+
+        # Add a table at the bottom of the axes
+        the_table = plt.table(cellText=cell_text,
+                              rowLabels=data.index,
+                              rowColours=colors,
+                              colLabels=data.columns,
+                              loc='bottom')
+
+        # Adjust layout to make room for the table:
+        plt.subplots_adjust(left=0.2, bottom=0.2)
+
+        plt.ylabel("销售额")
+        plt.xticks([])
+
     @staticmethod
     def autolabel(ax, rects):
         """
@@ -453,10 +496,26 @@ class Chandler:
         df_tmp = self.dataframe
         p = ["%s-%s" % (a.year, a.month) for a in df_tmp['create_date']]
         df_tmp['period'] = pd.to_datetime(p, format='%Y-%m')
-        df_filled = pd.pivot_table(df_tmp, index=['period'], values=['price'], columns=['region'],
-                                   aggfunc=np.sum).fillna(value=0.00).applymap("{0:.02f}".format)
+        df_filled = pd.pivot_table(
+            df_tmp,
+            index=['period'],
+            values=['price'],
+            columns=['region'],
+            aggfunc=np.sum).fillna(value=0.00).applymap("{0:.02f}".format)
         graph = Graph(
-            title="区域销量分布堆积图",
+            title="区域销量分布堆积图(按月份统计)",
             savefig_path="/home/murphy/sale/static/images/region_stacked_graph.png",
         )
         graph.callback('stacked_plot', {}, df_filled)
+
+    def name_pending(self):
+        """
+        堆积条形图结合数据表
+        :return:
+        """
+        data = self.dataframe
+        graph = Graph(
+            savefig_path=os.path.join(settings.BASE_DIR, 'static/images/bar_with_table_graph.png'),
+            title="Test"
+        )
+        graph.callback('bar_with_table_graph', {}, data)

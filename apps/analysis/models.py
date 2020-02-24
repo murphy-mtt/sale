@@ -1,5 +1,7 @@
+import datetime
 from django.db import models
 from django.forms import ModelForm
+from django.utils import timezone
 
 # Create your models here.
 
@@ -59,6 +61,9 @@ class Orders(models.Model):
 
     def __str__(self):
         return str(self.detecting_id)
+
+    def was_created_recently(self):
+        return self.create_date > timezone.now() - datetime.timedelta(30)
 
 
 def template_file_path(instance, filename):

@@ -1,15 +1,19 @@
+import os
+import numpy as np
+import pandas as pd
+import xlsxwriter
+import tempfile
+import matplotlib.pyplot as plt
+from matplotlib.patches import ConnectionPatch
+from io import BytesIO
+
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.generic import View, TemplateView, DetailView
 from django.apps import apps
-
 from django_pandas.io import read_frame
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-
-from matplotlib.patches import ConnectionPatch
 
 from .forms import UploadFileForm
 from .models import SaleData, Orders
@@ -100,6 +104,39 @@ class UploadSaleDataView(View):
                     except Exception as e:
                         pass
         return HttpResponseRedirect("../analysis")
+
+
+class DownloadDataView(View):
+    def get(self, request):
+        user = UserProfile.objects.get(username=request.user)
+        my_area = user.area
+        my_df = df.loc[df.area.isin([my_area]), :]
+        my_df['create_date'] = my_df['create_date'].apply(lambda x: x.strftime('%Y-%m-%d'))
+        cs = getmodelfield('analysis', 'Orders', [])
+        my_df.columns = [cs[key] for key in my_df.columns]
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            os.chdir(tmpdirname)
+            x_io = BytesIO()
+            workbook = xlsxwriter.Workbook(x_io, {'remove_timezone': True})
+            worksheet1 = workbook.add_worksheet('Sheet1')
+            row, col = 0, 0
+            for c in my_df.columns:
+                worksheet1.write(row, col, c)
+                col += 1
+            row, col = 1, 0
+            for i in range(len(my_df)):
+                for j in range(len(my_df.columns)):
+                    item = my_df.iloc[i, j]
+                    worksheet1.write(row, col, str(item))
+                    col += 1
+                row += 1
+                col = 0
+            workbook.close()
+            response = HttpResponse()
+            response["Content-Type"] = "application/octet-stream"
+            response["Content-Disposition"] = 'attachment; filename="sale.xlsx"'
+            response.write(x_io.getvalue())
+            return response
 
 
 class AreaSaleView(View):

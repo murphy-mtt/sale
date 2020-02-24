@@ -31,9 +31,9 @@
 						{{my_area}}区域数据统计简报
 					</h3>
 					{{ my_df_desc | safe }}
+					<a href="{% url 'downloaddata' %}" target="_blank">下载数据</a>
 					<h3>销量堆积图</h3>
 					<img src="/static/images/{{request.user}}/region_stacked_graph.png" alt="300x200">
-					<img src="/static/images/{{request.user}}/bar_with_table_graph.png" alt="300x200">
 				</div>
 			</div>
 		</div>

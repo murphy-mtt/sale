@@ -45,7 +45,7 @@ class IndexView(View):
             "order_type": "订单类型",
             "product_type": "产品",
         }
-        monica = Chandler(dataframe=df)
+        monica = Chandler(dataframe=df, username=request.user.username)
         a = monica.index_graph(category_dict)
         areas = list(set(df.area.values.tolist()))
         return render(request, 'analysis/index.html', {
@@ -113,7 +113,7 @@ class AreaSaleView(View):
         my_df_index = my_df_desc.index.values.tolist()
         sale_list = list(set(df.sale_person.values.tolist()))
         region_list = list(set(df.region.values.tolist()))
-        graph = Chandler(my_df)
+        graph = Chandler(my_df, request.user.username)
         graph.region_stacked_graph()
         return render(request, 'analysis/myarea.html', {
             "my_area": my_area,
@@ -134,7 +134,7 @@ class SalePersonView(View):
             "product_type": "产品",
             "doctor": "送检医生",
         }
-        graph1 = Chandler(dataframe=sale_df)
+        graph1 = Chandler(dataframe=sale_df, username=request.user.username)
         graph1.sale_bar_graph(category=category_dict)
         graph1.sale_ranking_graph(df, saleman)
         return render(request, 'analysis/saleman.html', {})
@@ -142,7 +142,7 @@ class SalePersonView(View):
 
 class RegionSaleView(View):
     def get(self, request, region):
-        graph = Chandler(df)
+        graph = Chandler(df, request.user.username)
         graph.region_distribution(region=region)
         return render(request, 'analysis/regionsale.html', {})
 
@@ -152,5 +152,5 @@ class RegionPersonView(View):
         user = UserProfile.objects.get(id=user_id)
         my_area = user.area
         my_df = df.loc[df.area.isin([my_area]), :]
-        monica = Chandler(dataframe=my_df)
+        monica = Chandler(dataframe=my_df, username=request.user.username)
         return render(request, 'analysis/saleman.html', {})

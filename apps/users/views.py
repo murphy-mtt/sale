@@ -1,3 +1,5 @@
+import os
+from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login, logout
@@ -61,6 +63,7 @@ class RegisterView(View):
                 return render(request, 'users/register.html', locals())
             else:
                 same_name_user = UserProfile.objects.filter(username=username)
+                static_dir = os.path.join(settings.BASE_DIR, 'static/images/{}'.format(username))
                 if same_name_user:
                     message = '用户已经存在，请重新选择用户名！如果您已经拥有账号，可尝试重置密码再登录。'
                     return render(request, 'users/register.html', locals())
@@ -69,6 +72,8 @@ class RegisterView(View):
                 user_profile.password = make_password(password1)
                 user_profile.is_active = True
                 user_profile.save()
+                if not os.path.exists(static_dir):
+                    os.makedirs(static_dir)
                 return render(request, 'users/register_info_ok.html', {"message": message})
         else:
             return render(request, 'users/register.html', {"register_form": register_form})

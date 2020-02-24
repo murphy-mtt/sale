@@ -408,8 +408,9 @@ class Graph:
 
 
 class Chandler:
-    def __init__(self, dataframe):
+    def __init__(self, dataframe, username):
         self.dataframe = dataframe
+        self.username = username
 
     def index_graph(self, category):
         ncols = 3
@@ -417,7 +418,7 @@ class Chandler:
         graph = Graph(
             nrows=nrows,
             ncols=ncols,
-            savefig_path="/home/murphy/sale/static/images/stat.png",
+            savefig_path=os.path.join(settings.BASE_DIR, 'static/images/stat.png'),
             figsize=(15, 10),
         )
         data_processor = DataProcessor(dataframe=self.dataframe)
@@ -446,7 +447,8 @@ class Chandler:
         graph = Graph(
             nrows=nrows,
             ncols=ncols,
-            savefig_path="/home/murphy/sale/static/images/saleman_bar.png",
+            savefig_path=os.path.join(settings.BASE_DIR,
+                                      "static/images/{}/saleman_bar.png".format(self.username)),
             figsize=(10, 10),
         )
         df_list = [data_processor.one_dimension(index=i, value='price', aggfunc=np.sum) for i in category]
@@ -466,7 +468,9 @@ class Chandler:
 
     def sale_ranking_graph(self, dataframe, s):
         data_processor = DataProcessor(dataframe=dataframe)
-        graph = Graph(savefig_path="/home/murphy/sale/static/images/saleman_ranking.png")
+        graph = Graph(
+            savefig_path=os.path.join(settings.BASE_DIR, 'static/images/{}/saleman_ranking.png'.format(self.username))
+        )
         df_ps = data_processor.multi_columns(index=['product_type'], columns=['sale_person'])
         graph.ranking_bar(s, df_ps, dataframe)
 
@@ -477,7 +481,8 @@ class Chandler:
             nrows=1,
             ncols=2,
             title="区域销量分布：{}".format(region),
-            savefig_path="/home/murphy/sale/static/images/region_distribution.png"
+            savefig_path=os.path.join(settings.BASE_DIR,
+                                      "static/images/{}/region_distribution.png".format(self.username))
         )
         counts1 = []
         lables1 = df_bp.index.levels[0].values.tolist()
@@ -504,7 +509,8 @@ class Chandler:
             aggfunc=np.sum).fillna(value=0.00).applymap("{0:.02f}".format)
         graph = Graph(
             title="区域销量分布堆积图(按月份统计)",
-            savefig_path="/home/murphy/sale/static/images/region_stacked_graph.png",
+            savefig_path=os.path.join(settings.BASE_DIR,
+                                      "static/images/{}/region_stacked_graph.png".format(self.username))
         )
         graph.callback('stacked_plot', {}, df_filled)
 

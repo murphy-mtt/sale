@@ -331,6 +331,21 @@ class Graph:
         plt.ylabel("销售额")
         plt.xticks([])
 
+    def box_plot(self, data):
+        """
+        箱线图
+        :param data: dict
+        :return:
+        """
+        fig, ax = self.fig, self.ax_list
+        values = []
+        labels = []
+        for k, v in [(k, data[k]) for k in sorted(data.keys())]:
+            values.append(v)
+            labels.append(k)
+        bplot = ax.boxplot(values, vert=True, patch_artist=True, labels=labels, notch=True)
+        return bplot
+
     @staticmethod
     def autolabel(ax, rects):
         """
@@ -525,3 +540,14 @@ class Chandler:
             title="Test"
         )
         graph.callback('bar_with_table_graph', {}, data)
+
+
+if __name__ == "__main__":
+    graph = Graph(
+        savefig_path="/home/murphy/sale/static/images/region_stacked_graph.png",
+        title="Example"
+    )
+    data = [np.random.normal(0, std, size=100) for std in range(1, 4)]
+    lst = list("ABC")
+    d = dict(zip(lst, data))
+    graph.callback("box_plot", {}, d)

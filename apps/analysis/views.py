@@ -152,6 +152,9 @@ class AreaSaleView(View):
         region_list = list(set(df.region.values.tolist()))
         graph = Chandler(my_df, request.user.username)
         graph.region_stacked_graph()
+        region_sale_performance = pd.pivot_table(df, index=['region', 'sale_person'], values=['price'], aggfunc=np.sum)
+        rsp = Chandler(region_sale_performance, request.user.username)
+        rsp.region_sale_performance()
         return render(request, 'analysis/myarea.html', {
             "my_area": my_area,
             "my_df_desc": my_df_desc.to_html(),

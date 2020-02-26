@@ -343,8 +343,11 @@ class Graph:
         for k, v in [(k, data[k]) for k in sorted(data.keys())]:
             values.append(v)
             labels.append(k)
-        bplot = ax.boxplot(values, vert=True, patch_artist=True, labels=labels, notch=True)
+        bplot = ax.boxplot(values, vert=True, patch_artist=True, labels=labels)
         return bplot
+
+    def box_plot_with_pvalue(self, data):
+        pass
 
     @staticmethod
     def autolabel(ax, rects):
@@ -540,6 +543,16 @@ class Chandler:
             title="Test"
         )
         graph.callback('bar_with_table_graph', {}, data)
+
+    def region_sale_performance(self):
+        data = {}
+        for i in self.dataframe.index.levels[0]:
+            data[i] = self.dataframe.loc[i, :].values.T[0]
+        graph = Graph(
+            savefig_path=os.path.join(settings.BASE_DIR, 'static/images/{}/region_sale_performance.png'.format(self.username)),
+            title="区域销售销售额分布"
+        )
+        graph.callback("box_plot", {}, data)
 
 
 if __name__ == "__main__":
